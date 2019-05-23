@@ -169,7 +169,7 @@ func (storage *LocalStorage) ReadStream(filePath string, mode string) (io.ReadCl
 }
 
 func (storage *LocalStorage) Save(dstFile string, srcFile multipart.File) (bool, error) {
-
+	return true, nil
 }
 
 func (storage *LocalStorage) Delete(filePath string) (bool, error) {

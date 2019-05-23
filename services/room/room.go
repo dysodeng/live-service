@@ -9,7 +9,6 @@ import (
 	"strconv"
 	"log"
 	file2 "live-service/support/file"
-	"os"
 )
 
 type Test struct {
@@ -145,20 +144,20 @@ func TestParams(ctx *gin.Context) {
 }
 
 func TestFile(ctx *gin.Context) {
-	f,err := ctx.FormFile("")
+
+	uploadFile,err := ctx.FormFile("cover_image")
 	if err != nil {
-
+		log.Println(err.Error())
+		return
 	}
-	ctx.SaveUploadedFile(f, "")
-	filesystem := file2.NewFilesystem("user", 1)
-	filesystem.HasFile("aaa")
-
-	os.Open("")
 
 	file := file2.NewFilesystem("user", 1)
+
 	if file.HasFile("user/1/2019-03-24/cover_image17.png") {
 		log.Println("文件存在")
 	} else {
 		log.Println("文件不存在")
 	}
+	url := file.SignUrl("user/1/2019-03-24/cover_image17.png")
+	log.Println(url)
 }

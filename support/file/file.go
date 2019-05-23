@@ -37,7 +37,7 @@ func NewFilesystem(userType string, userId int64) *Filesystem {
 		log.Fatalf("file storage error:"+conf.App.Filesystem.Storage)
 	}
 
-	file.uploader = NewUploader(&file.storage)
+	file.uploader = NewUploader(file.storage)
 
 	return file
 }
@@ -46,4 +46,12 @@ func NewFilesystem(userType string, userId int64) *Filesystem {
 func (file *Filesystem) HasFile(filePath string) bool {
 	result := file.storage.HasFile(filePath)
 	return result
+}
+
+func (file *Filesystem) SignUrl(filePath string) string {
+	return file.storage.SignUrl(filePath)
+}
+
+func (file *Filesystem) Uploader()  {
+	
 }
