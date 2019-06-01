@@ -7,8 +7,9 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
+    env_file: ./.env
     volumes:
-      - ${GOPATH}/${GOSRC}/live-service:/go/src/live-service
+      - ../:/go/src/live-service
     environment:
       - domain=${DOMAIN}
       - mysql_host=${MYSQL_HOST}
