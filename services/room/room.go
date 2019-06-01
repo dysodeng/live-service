@@ -150,6 +150,7 @@ func TestFile(ctx *gin.Context) {
 		log.Println(err.Error())
 		return
 	}
+	log.Println(uploadFile)
 
 	file := file2.NewFilesystem("user", 1)
 
