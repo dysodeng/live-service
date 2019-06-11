@@ -42,6 +42,7 @@ type AliOssStorage struct {
 	bucket *oss.Bucket
 }
 
+// create alioss storage
 func NewAliOssStorage() Storage {
 
 	aliStorage := new(AliOssStorage)
@@ -64,8 +65,7 @@ func NewAliOssStorage() Storage {
 	}
 	aliStorage.bucket = bucket
 
-	var storage Storage
-	storage = aliStorage
+	var storage Storage = aliStorage
 
 	return storage
 }
@@ -159,8 +159,7 @@ func NewLocalStorage() Storage {
 
 	localStorage := new(LocalStorage)
 
-	var storage Storage
-	storage = localStorage
+	var storage Storage = localStorage
 
 	return storage
 }

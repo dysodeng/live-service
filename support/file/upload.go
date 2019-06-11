@@ -56,13 +56,14 @@ func (uploader *Uploader) Upload(userType string, userId int64, fileHeader *mult
 		return Info{}, errors.New("文件读取错误")
 	}
 
+	// 类型与后缀
 	var mime = fileHeader.Header.Get("Content-Type")
 	var ext string
 	filename := fileHeader.Filename
 
 	extSlice := strings.Split(filename, ".")
-	if len(extSlice) == 2 {
-		ext = extSlice[1]
+	if len(extSlice) >= 2 {
+		ext = extSlice[len(extSlice) - 1]
 	}
 
 	// 如果是图片，获取图片尺寸
@@ -100,6 +101,7 @@ func (uploader *Uploader) Upload(userType string, userId int64, fileHeader *mult
 		size = fileSize.Size()
 	}
 
+	// 上传文件
 	result, err := uploader.storage.Save(dstFile, dstFileReader, mime)
 	if err != nil {
 		log.Println(err.Error(), result)
