@@ -148,17 +148,29 @@ func TestFile(ctx *gin.Context) {
 	uploadFile,err := ctx.FormFile("cover_image")
 	if err != nil {
 		log.Println(err.Error())
+		ctx.JSON(http.StatusOK, err.Error())
 		return
 	}
-	log.Println(uploadFile)
 
 	file := file2.NewFilesystem("user", 1)
-
-	if file.HasFile("user/1/2019-03-24/cover_image17.png") {
-		log.Println("文件存在")
-	} else {
-		log.Println("文件不存在")
+	result,err := file.Uploader(uploadFile)
+	if err != nil {
+		log.Println(err.Error())
+		ctx.JSON(http.StatusOK, err.Error())
+		return
 	}
-	url := file.SignUrl("user/1/2019-03-24/cover_image17.png")
-	log.Println(url)
+	log.Println(result)
+	if result.FullPath != "" {
+		result.FullPath = file.SignUrl(result.FullPath)
+	}
+	ctx.JSON(http.StatusOK, result)
+
+	//
+	//if file.HasFile("user/1/2019-03-24/cover_image17.png") {
+	//	log.Println("文件存在")
+	//} else {
+	//	log.Println("文件不存在")
+	//}
+	//url := file.SignUrl("user/1/2019-03-24/cover_image17.png")
+	//log.Println(url)
 }

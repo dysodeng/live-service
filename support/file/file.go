@@ -3,6 +3,8 @@ package file
 import (
 	"live-service/util/config"
 	"log"
+	"mime/multipart"
+	"os"
 )
 
 type Filesystem struct {
@@ -10,6 +12,29 @@ type Filesystem struct {
 	storage Storage
 	userType string
 	userId	int64
+}
+
+type Size interface {
+	Size() int64
+}
+
+type Stat interface {
+	Stat() (os.FileInfo, error)
+}
+
+// 文件信息
+type Info struct {
+	FullPath string	`json:"full_path"`
+	Md5 string `json:"md5"`
+	Sha1 string `json:"sha1"`
+	Name string `json:"name"`
+	Ext string `json:"ext"`
+	RootPath string `json:"root_path"`
+	Mime string `json:"mime"`
+	Size int64 `json:"size"`
+	IsImage uint8 `json:"is_image"`
+	Width int `json:"width"`
+	Height int `json:"height"`
 }
 
 func NewFilesystem(userType string, userId int64) *Filesystem {
@@ -43,15 +68,17 @@ func NewFilesystem(userType string, userId int64) *Filesystem {
 }
 
 // 判断文件是否存在
-func (file *Filesystem) HasFile(filePath string) bool {
-	result := file.storage.HasFile(filePath)
+func (filesystem *Filesystem) HasFile(filePath string) bool {
+	result := filesystem.storage.HasFile(filePath)
 	return result
 }
 
-func (file *Filesystem) SignUrl(filePath string) string {
-	return file.storage.SignUrl(filePath)
+// 获取授权资源
+func (filesystem *Filesystem) SignUrl(filePath string) string {
+	return filesystem.storage.SignUrl(filePath)
 }
 
-func (file *Filesystem) Uploader()  {
-	
+// 文件上传
+func (filesystem *Filesystem) Uploader(file *multipart.FileHeader) (Info, error) {
+	return filesystem.uploader.Upload(filesystem.userType, filesystem.userId, file)
 }

@@ -11,6 +11,9 @@ import (
 func GetRouter() *gin.Engine {
 	router := gin.Default()
 
+	// 跨域处理
+	router.Use(middleware.CrossDomain)
+
 	api := router.Group("/api")
 	{
 		apiAuth := api.Group("/auth")
@@ -18,10 +21,7 @@ func GetRouter() *gin.Engine {
 			apiAuth.POST("/login", auth.Login)
 			apiAuth.POST("/register", auth.Register)
 		}
-		test := api.Group("/test")
-		{
-			test.GET("/", room.TestFile)
-		}
+		api.POST("/test", room.TestFile)
 
 		authorization := api.Group("/")
 		authorization.Use(middleware.TokenAuth)

@@ -7,6 +7,8 @@ import (
 	"io/ioutil"
 	"io"
 	"mime/multipart"
+	"strings"
+	"live-service/util"
 )
 
 // 文件存储器接口
@@ -22,7 +24,7 @@ type Storage interface {
 	ReadStream(filePath string, mode string) (io.ReadCloser, error)
 
 	// 保存文件
-	Save(dstFile string, srcFile multipart.File) (bool, error)
+	Save(dstFile string, srcFile multipart.File, mime string) (bool, error)
 
 	// 删除文件
 	Delete(filePath string) (bool, error)
@@ -108,8 +110,15 @@ func (storage *AliOssStorage) ReadStream(filePath string, mode string) (io.ReadC
 	return body, nil
 }
 
-func (storage *AliOssStorage) Save(dstFile string, srcFile multipart.File) (bool, error) {
-	if err := storage.bucket.PutObject(dstFile, srcFile); err != nil {
+func (storage *AliOssStorage) Save(dstFile string, srcFile multipart.File, mime string) (bool, error) {
+
+	var options []oss.Option
+	if mime != "" {
+		options = []oss.Option{
+			oss.ContentType(mime),
+		}
+	}
+	if err := storage.bucket.PutObject(dstFile, srcFile, options...); err != nil {
 		return false, err
 	}
 
@@ -131,12 +140,14 @@ func (storage *AliOssStorage) MkDir(dir string, mode uint8) (bool, error) {
 }
 
 func (storage *AliOssStorage) SignUrl(object string) string {
-	signUrl, err := storage.bucket.SignURL(object, oss.HTTPGet, 60)
+
+	signUrl, err := storage.bucket.SignURL(object, oss.HTTPGet, 60 + util.CstHour)
 	if err != nil {
 		log.Println(err.Error())
 		return object
 	}
-	return signUrl
+
+	return strings.Replace(signUrl, "http://", "https://", 1)
 }
 
 // 本地存储器
@@ -168,7 +179,7 @@ func (storage *LocalStorage) ReadStream(filePath string, mode string) (io.ReadCl
 	return nil,nil
 }
 
-func (storage *LocalStorage) Save(dstFile string, srcFile multipart.File) (bool, error) {
+func (storage *LocalStorage) Save(dstFile string, srcFile multipart.File, mime string) (bool, error) {
 	return true, nil
 }
 

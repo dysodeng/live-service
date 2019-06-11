@@ -3,7 +3,14 @@ package util
 import (
 	"golang.org/x/crypto/bcrypt"
 	"log"
+	"strconv"
+	"time"
+	"math/rand"
 )
+
+// 时区
+var CstZone = time.FixedZone("CST", 8*3600)
+var CstHour int64 = 8 * 3600
 
 // api 返回数据
 type ApiData struct {
@@ -42,4 +49,19 @@ func ComparePassword(hashedPassword string, plainPassword []byte) bool {
 		return false
 	}
 	return true
+}
+
+// 生成唯一订单号
+func CreateOrderNo() string {
+	sTime := time.Now().Format("20060102150405")
+
+	t := time.Now().UnixNano()
+	s := strconv.FormatInt(t, 10)
+	b := string([]byte(s)[len(s) - 9:])
+	c := string([]byte(b)[:7])
+
+	rand.Seed(t)
+
+	sTime += c + strconv.FormatInt(rand.Int63n(9999 - 1000) + 1000, 10)
+	return sTime
 }
