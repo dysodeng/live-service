@@ -10,7 +10,7 @@ git clone https://github.com/DysoDeng/live-service.git
 cd live-service/deploy && copy .env.example .env
 ```
 - 配置nginx：live-service.conf
-- 运行docker-compose
+- 启动项目
 ```
 docker-compose up -d
 ```
