@@ -35,15 +35,15 @@ func Login(ctx *gin.Context) {
 
 	if ctx.ShouldBind(&auth) != nil {
 		if auth.UserType == "" {
-			ctx.JSON(http.StatusOK, util.ToastError("用户类型错误", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("用户类型错误", 1))
 			return
 		}
 		if auth.Username == "" {
-			ctx.JSON(http.StatusOK, util.ToastError("用户名为空", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("用户名为空", 1))
 			return
 		}
 		if auth.Password == "" {
-			ctx.JSON(http.StatusOK, util.ToastError("密码为空", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("密码为空", 1))
 			return
 		}
 	}
@@ -63,11 +63,11 @@ func Login(ctx *gin.Context) {
 		var user models.User
 		db.Debug().Where("telephone=?", auth.Username).First(&user)
 		if user.ID <= 0 {
-			ctx.JSON(http.StatusOK, util.ToastError("用户名错误", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("用户名错误", 1))
 			return
 		}
 		if util.ComparePassword(user.SafePassword, []byte(auth.Password)) == false {
-			ctx.JSON(http.StatusOK, util.ToastError("密码错误", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("密码错误", 1))
 			return
 		}
 
@@ -90,7 +90,7 @@ func Login(ctx *gin.Context) {
 
 		break
 	default:
-		ctx.JSON(http.StatusOK, util.ToastError("用户类型错误", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("用户类型错误", 1))
 		return
 	}
 
@@ -101,17 +101,17 @@ func Login(ctx *gin.Context) {
 
 	tokenSecretBytes, err := ioutil.ReadFile(rootDir + util.PrivateKey)
 	if err != nil {
-		ctx.JSON(http.StatusOK, util.ToastError("TOKEN生成错误", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("TOKEN生成错误", 1))
 		return
 	}
 	tokenSecret, err := jwt.ParseRSAPrivateKeyFromPEM(tokenSecretBytes)
 	if err != nil {
-		ctx.JSON(http.StatusOK, util.ToastError("TOKEN生成错误", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("TOKEN生成错误", 1))
 		return
 	}
 	token, err := tokenMethod.SignedString(tokenSecret)
 	if err != nil {
-		ctx.JSON(http.StatusOK, util.ToastError("TOKEN生成错误", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("TOKEN生成错误", 1))
 		return
 	}
 
@@ -126,25 +126,25 @@ func Register(ctx *gin.Context) {
 	var data RegisterData
 	if ctx.ShouldBind(&data) != nil {
 		if data.UserType == "" {
-			ctx.JSON(http.StatusOK, util.ToastError("用户类型错误", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("用户类型错误", 1))
 			return
 		}
 		if data.Username == "" {
-			ctx.JSON(http.StatusOK, util.ToastError("用户名为空", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("用户名为空", 1))
 			return
 		}
 		if data.Password == "" {
-			ctx.JSON(http.StatusOK, util.ToastError("密码为空", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("密码为空", 1))
 			return
 		}
 		if data.ConfirmPassword == "" {
-			ctx.JSON(http.StatusOK, util.ToastError("确认密码为空", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("确认密码为空", 1))
 			return
 		}
 	}
 
 	if data.ConfirmPassword != data.Password {
-		ctx.JSON(http.StatusOK, util.ToastError("两次密码不一致", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("两次密码不一致", 1))
 		return
 	}
 
@@ -156,7 +156,7 @@ func Register(ctx *gin.Context) {
 		var user models.User
 		db.Debug().Table(database.FullTableName("users")).Where("telephone=?", data.Username).First(&user)
 		if user.ID > 0 {
-			ctx.JSON(http.StatusOK, util.ToastError("用户名已被注册", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("用户名已被注册", 1))
 			return
 		}
 
@@ -170,14 +170,14 @@ func Register(ctx *gin.Context) {
 
 		db.Debug().Create(&newUser)
 		if newUser.ID <= 0 {
-			ctx.JSON(http.StatusOK, util.ToastError("注册失败", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("注册失败", 1))
 			return
 		}
 
 		ctx.JSON(http.StatusOK, util.ToastSuccess(newUser))
 		break
 	default:
-		ctx.JSON(http.StatusOK, util.ToastError("用户类型错误", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("用户类型错误", 1))
 		return
 
 	}

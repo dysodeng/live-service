@@ -25,7 +25,7 @@ func ToastSuccess(result interface{}) ApiData {
 }
 
 // 出错数据
-func ToastError(error string, code int) ApiData {
+func ToastFail(error string, code int) ApiData {
 	return ApiData{code, "", error}
 }
 

@@ -24,13 +24,13 @@ func CreateRoom(ctx *gin.Context) {
 	userType := ctx.MustGet("user_type")
 
 	if userId <= 0 || userType != "user" {
-		ctx.JSON(http.StatusOK, util.ToastError("非法操作", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("非法操作", 1))
 		return
 	}
 
 	roomName := ctx.PostForm("room_name")
 	if roomName == "" {
-		ctx.JSON(http.StatusOK, util.ToastError("房间名为空", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("房间名为空", 1))
 		return
 	}
 
@@ -43,7 +43,7 @@ func CreateRoom(ctx *gin.Context) {
 	db.Debug().Create(&room)
 
 	if room.Id <= 0 {
-		ctx.JSON(http.StatusOK, util.ToastError("房间名创建失败", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("房间名创建失败", 1))
 		return
 	}
 
@@ -79,7 +79,7 @@ func ModifyRoom(ctx *gin.Context) {
 	userType := ctx.MustGet("user_type")
 
 	if userId <= 0 || userType != "user" {
-		ctx.JSON(http.StatusOK, util.ToastError("非法操作", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("非法操作", 1))
 		return
 	}
 
@@ -91,11 +91,11 @@ func ModifyRoom(ctx *gin.Context) {
 	var roomModifyData modifyRoomData
 	if ctx.ShouldBind(&roomModifyData) != nil {
 		if roomModifyData.RoomId <= 0 {
-			ctx.JSON(http.StatusOK, util.ToastError("房间ID错误", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("房间ID错误", 1))
 			return
 		}
 		if roomModifyData.RoomName == "" {
-			ctx.JSON(http.StatusOK, util.ToastError("房间名称为空", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("房间名称为空", 1))
 			return
 		}
 	}
@@ -105,11 +105,11 @@ func ModifyRoom(ctx *gin.Context) {
 	db := database.GetDb()
 	db.Debug().First(&room, roomModifyData.RoomId)
 	if room.Id <= 0 {
-		ctx.JSON(http.StatusOK, util.ToastError("房间不存在", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("房间不存在", 1))
 		return
 	}
 	if room.UserId != userId {
-		ctx.JSON(http.StatusOK, util.ToastError("房间错误", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("房间错误", 1))
 		return
 	}
 
@@ -128,7 +128,7 @@ func TestParams(ctx *gin.Context) {
 	userType := ctx.MustGet("user_type")
 
 	if userId <= 0 || userType != "user" {
-		ctx.JSON(http.StatusOK, util.ToastError("非法操作", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("非法操作", 1))
 		return
 	}
 
@@ -136,7 +136,7 @@ func TestParams(ctx *gin.Context) {
 	if err := ctx.ShouldBind(&test); err != nil {
 		log.Println(err)
 		log.Println(test)
-		ctx.JSON(http.StatusOK, util.ToastError("数据错误", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail("数据错误", 1))
 		return
 	}
 

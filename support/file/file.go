@@ -73,6 +73,7 @@ func (filesystem *Filesystem) HasFile(filePath string) bool {
 	return result
 }
 
+// 删除文件
 func (filesystem *Filesystem) DeleteFile(filePath string) (bool, error) {
 	_, err := filesystem.storage.Delete(filePath)
 	if err != nil {
