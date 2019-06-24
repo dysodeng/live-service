@@ -2,9 +2,9 @@ package ruote
 
 import (
 	"github.com/gin-gonic/gin"
-	"live-service/services/auth"
-	"live-service/services/room"
-	"live-service/middleware"
+	"live-service/app/services/auth"
+	"live-service/app/services/room"
+	"live-service/app/middleware"
 )
 
 // 获取路由
@@ -23,6 +23,7 @@ func GetRouter() *gin.Engine {
 		}
 		api.POST("/test", room.TestFile)
 		api.GET("/file", room.File)
+		api.GET("/cache", room.Cache)
 
 		authorization := api.Group("/")
 		authorization.Use(middleware.TokenAuth)

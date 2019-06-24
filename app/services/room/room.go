@@ -3,12 +3,14 @@ package room
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"live-service/util"
-	"live-service/models"
-	"live-service/util/database"
+	"live-service/app/util"
+	"live-service/app/models"
+	"live-service/app/util/database"
 	"strconv"
 	"log"
-	file2 "live-service/support/file"
+	file2 "live-service/app/support/file"
+	cache2 "live-service/app/util/cache"
+	"time"
 )
 
 type Test struct {
@@ -185,4 +187,18 @@ func File(ctx *gin.Context) {
 	url := file.SignUrl("user/1/2019-06-24/user12019062403432497212422499.png")
 	log.Println(url)
 	//file.DeleteFile("user/1/2019-06-24/user12019062403432497212422499.png")
+}
+
+func Cache(ctx *gin.Context) {
+	cache := cache2.GetCache()
+	cache.Put("abc", 1, 100*time.Second)
+
+	result := cache.Get("abc")
+
+	log.Println(string(result.([]byte)))
+
+	cache.Incr("abc")
+	result = cache.Get("abc")
+
+	log.Println(string(result.([]byte)))
 }

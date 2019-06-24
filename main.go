@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"live-service/ruote"
+	"live-service/app/ruote"
 	"net/http"
 	"log"
 	"os"

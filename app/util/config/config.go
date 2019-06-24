@@ -90,6 +90,9 @@ func GetAppConfig()(e AppConfig, err error) {
 	e.App.Redis.Port = os.Getenv("redis_port")
 	e.App.Redis.Password = os.Getenv("redis_password")
 
+	e.App.MemCache.Host = os.Getenv("memcache_host")
+	e.App.MemCache.Port = os.Getenv("memcache_port")
+
 	e.App.Cache.Driver = os.Getenv("cache_driver")
 
 	e.App.AliOss.AccessId = os.Getenv("oss_access_id")

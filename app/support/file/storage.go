@@ -2,13 +2,13 @@ package file
 
 import (
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
-	"live-service/util/config"
+	"live-service/app/util/config"
 	"log"
 	"io/ioutil"
 	"io"
 	"mime/multipart"
 	"strings"
-	"live-service/util"
+	"live-service/app/util"
 	"path/filepath"
 	"os"
 )

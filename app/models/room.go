@@ -1,7 +1,7 @@
 package models
 
 import (
-	"live-service/util/config"
+	"live-service/app/util/config"
 	"log"
 )
 

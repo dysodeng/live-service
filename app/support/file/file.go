@@ -1,7 +1,7 @@
 package file
 
 import (
-	"live-service/util/config"
+	"live-service/app/util/config"
 	"log"
 	"mime/multipart"
 	"os"
