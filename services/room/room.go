@@ -174,3 +174,15 @@ func TestFile(ctx *gin.Context) {
 	//url := file.SignUrl("user/1/2019-03-24/cover_image17.png")
 	//log.Println(url)
 }
+
+func File(ctx *gin.Context) {
+	file := file2.NewFilesystem("user", 1)
+	if file.HasFile("user/1/2019-06-24/user12019062403432497212422499.png") {
+		log.Println("文件存在")
+	} else {
+		log.Println("文件不存在")
+	}
+	url := file.SignUrl("user/1/2019-06-24/user12019062403432497212422499.png")
+	log.Println(url)
+	//file.DeleteFile("user/1/2019-06-24/user12019062403432497212422499.png")
+}

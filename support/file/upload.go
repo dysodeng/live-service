@@ -88,11 +88,18 @@ func (uploader *Uploader) Upload(userType string, userId int64, fileHeader *mult
 	io.Copy(fileSha1, file)
 	sha1String := hex.EncodeToString(fileSha1.Sum(nil))
 
-	savePath := time.Now().Format("2006-01-02") + "/" + userType + stringUserId + util.CreateOrderNo()
+	savePath := time.Now().Format("2006-01-02") + "/"
+	filePath := userType + stringUserId + util.CreateOrderNo()
 
-	dstFile := rootPath + savePath
+	dstFile := rootPath + savePath + filePath
 	if ext != "" {
 		dstFile += "." + ext
+	}
+
+	// 创建目录
+	_, err = uploader.storage.MkDir(rootPath + savePath, 0755)
+	if err != nil {
+		return Info{}, err
 	}
 
 	// 计算文件大小

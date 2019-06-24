@@ -73,6 +73,14 @@ func (filesystem *Filesystem) HasFile(filePath string) bool {
 	return result
 }
 
+func (filesystem *Filesystem) DeleteFile(filePath string) (bool, error) {
+	_, err := filesystem.storage.Delete(filePath)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 // 获取授权资源
 func (filesystem *Filesystem) SignUrl(filePath string) string {
 	return filesystem.storage.SignUrl(filePath)

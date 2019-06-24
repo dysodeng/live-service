@@ -26,6 +26,8 @@ services:
       - oss_end_point=${OSS_END_POINT}
       - oss_end_point_internal=${OSS_END_POINT_INTERNAL}
       - oss_bucket_name=${OSS_BUCKET_NAME}
+      - root_path=${ROOT_PATH}
+      - default_storage=${DEFAULT_STORAGE}
     depends_on:
       - redis-server
     links:

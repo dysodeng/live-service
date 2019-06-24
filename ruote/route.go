@@ -22,6 +22,7 @@ func GetRouter() *gin.Engine {
 			apiAuth.POST("/register", auth.Register)
 		}
 		api.POST("/test", room.TestFile)
+		api.GET("/file", room.File)
 
 		authorization := api.Group("/")
 		authorization.Use(middleware.TokenAuth)

@@ -9,6 +9,8 @@ import (
 	"mime/multipart"
 	"strings"
 	"live-service/util"
+	"path/filepath"
+	"os"
 )
 
 // 文件存储器接口
@@ -18,7 +20,7 @@ type Storage interface {
 	HasFile(filePath string) bool
 
 	// 读取文件内容
-	Read(filePath string) (interface{}, error)
+	Read(filePath string) ([]byte, error)
 
 	// 读取文件流
 	ReadStream(filePath string, mode string) (io.ReadCloser, error)
@@ -30,7 +32,7 @@ type Storage interface {
 	Delete(filePath string) (bool, error)
 
 	// 创建目录
-	MkDir(dir string, mode uint8) (bool, error)
+	MkDir(dir string, mode os.FileMode) (bool, error)
 
 	// 获取授权资源
 	SignUrl(object string) string
@@ -81,19 +83,19 @@ func (storage *AliOssStorage) HasFile(filePath string) bool {
 	return result
 }
 
-func (storage *AliOssStorage) Read(filePath string) (interface{}, error) {
+func (storage *AliOssStorage) Read(filePath string) ([]byte, error) {
 
 	body,err := storage.bucket.GetObject(filePath)
 	if err != nil {
 		log.Println(err.Error())
-		return "", err
+		return []byte{}, err
 	}
 	defer body.Close()
 
 	data,err := ioutil.ReadAll(body)
 	if err != nil {
 		log.Println(err.Error())
-		return "", err
+		return []byte{}, err
 	}
 
 	return data, nil
@@ -135,7 +137,7 @@ func (storage *AliOssStorage) Delete(filePath string) (bool, error) {
 	return true, nil
 }
 
-func (storage *AliOssStorage) MkDir(dir string, mode uint8) (bool, error) {
+func (storage *AliOssStorage) MkDir(dir string, mode os.FileMode) (bool, error) {
 	return true, nil
 }
 
@@ -152,12 +154,26 @@ func (storage *AliOssStorage) SignUrl(object string) string {
 
 // 本地存储器
 type LocalStorage struct {
-
+	rootPath string
 }
 
 func NewLocalStorage() Storage {
 
+	conf,err := config.GetAppConfig()
+	if err != nil {
+		log.Fatalf("get config error:"+err.Error())
+	}
+
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))  //返回绝对路径  filepath.Dir(os.Args[0])去除最后一个元素的路径
+	if err != nil {
+		log.Fatal(err)
+	}
+	root := strings.Replace(dir, "\\", "/", -1)
+
 	localStorage := new(LocalStorage)
+	localStorage.rootPath = root +"/"+ conf.App.FileLocal.RootPath + "/"
+
+	log.Println(localStorage.rootPath)
 
 	var storage Storage = localStorage
 
@@ -165,33 +181,76 @@ func NewLocalStorage() Storage {
 }
 
 func (storage *LocalStorage) HasFile(filePath string) bool {
+	_, err := os.Stat(storage.rootPath + filePath)
 
-	return true
+	return err == nil || os.IsExist(err)
 }
 
-func (storage *LocalStorage) Read(filePath string) (interface{}, error) {
+func (storage *LocalStorage) Read(filePath string) ([]byte, error) {
+	content,err := ioutil.ReadFile(storage.rootPath + filePath)
+	if err != nil {
+		return []byte{}, err
+	}
 
-	return "", nil
+	return content, nil
 }
 
 func (storage *LocalStorage) ReadStream(filePath string, mode string) (io.ReadCloser, error) {
-	return nil,nil
+	content,err := os.OpenFile(storage.rootPath + filePath, os.O_RDONLY, 0755)
+	if err != nil {
+		return nil, err
+	}
+
+	defer content.Close()
+
+	return ioutil.NopCloser(content),nil
 }
 
 func (storage *LocalStorage) Save(dstFile string, srcFile multipart.File, mime string) (bool, error) {
+	content, err := ioutil.ReadAll(srcFile)
+	if err != nil {
+		return false, err
+	}
+
+	err = ioutil.WriteFile(storage.rootPath + dstFile, content, 0766)
+	if err != nil {
+		return false, err
+	}
+
 	return true, nil
 }
 
 func (storage *LocalStorage) Delete(filePath string) (bool, error) {
+	path := storage.rootPath + filePath
+	_, err := os.Stat(path)
+	if err != nil {
+		return false, err
+	}
+
+	err = os.Remove(path)
+
+	if err != nil {
+		return false, err
+	}
+
 	return true, nil
 }
 
-func (storage *LocalStorage) MkDir(dir string, mode uint8) (bool, error) {
-
+func (storage *LocalStorage) MkDir(dir string, mode os.FileMode) (bool, error) {
+	path := storage.rootPath + dir
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		err := os.MkdirAll(path, mode)
+		if err != nil {
+			return false, err
+		}
+	}
 	return true, nil
 }
 
 func (storage *LocalStorage) SignUrl(object string) string {
-
-	return ""
+	return object
 }
