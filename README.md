@@ -14,3 +14,14 @@ cd live-service/deploy && copy .env.example .env
 ```
 docker-compose up -d
 ```
+
+### 基础功能计划
+
+- [x] 基础架构搭建
+- [x] JWT Token验证
+- [x] 基础中间件(Token鉴权，跨域)
+- [x] 集成阿里OSS
+- [x] 文件上传组件
+- [ ] 短信组件
+- [ ] 微信组件
+- [ ] 集成阿里云服务组件
