@@ -14,7 +14,7 @@ import (
 var CstZone = time.FixedZone("CST", 8*3600)
 var CstHour int64 = 8 * 3600
 
-// api 返回数据
+// api 数据结构
 type ApiData struct {
 	Code	int			`json:"code"`
 	Data 	interface{}	`json:"data"`
@@ -26,7 +26,7 @@ func ToastSuccess(result interface{}) ApiData {
 	return ApiData{0, result, "ok"}
 }
 
-// 出错数据
+// 失败数据
 func ToastFail(error string, code int) ApiData {
 	return ApiData{code, "", error}
 }
@@ -68,6 +68,7 @@ func CreateOrderNo() string {
 	return sTime
 }
 
+// 生成指定长度数字字符串
 func GenValidateCode(width int) string {
 	numeric := [10]byte{0,1,2,3,4,5,6,7,8,9}
 	r := len(numeric)

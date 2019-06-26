@@ -6,13 +6,7 @@ import (
 	"live-service/app/util"
 	"live-service/app/util/database"
 	"live-service/app/models"
-	"github.com/dgrijalva/jwt-go"
-	"live-service/app/util/config"
 	"time"
-	"path/filepath"
-	"os"
-	"log"
-	"io/ioutil"
 )
 
 type LoginAuth struct {
@@ -50,13 +44,7 @@ func Login(ctx *gin.Context) {
 
 	db := database.GetDb()
 
-	conf,err := config.GetAppConfig()
-	if err != nil {
-
-	}
-
-	var tokenMethod *jwt.Token
-	var expire int64
+	data := make(map[string]interface{})
 
 	switch auth.UserType {
 	case "user":
@@ -71,19 +59,7 @@ func Login(ctx *gin.Context) {
 			return
 		}
 
-		expire = 24 * 3600
-		currentTime := time.Now().Unix()
-
-		// Token
-		tokenMethod = jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-			"user_id":          user.ID,
-			"user_type":        auth.UserType,
-			"is_refresh_token": false,
-			"iss":              conf.App.Domain + "/api/auth",
-			"aud":              conf.App.Domain,
-			"iat":              currentTime,
-			"exp":              currentTime + int64(expire),
-		})
+		data["user_id"] = user.ID
 
 		db.Debug().Table(database.FullTableName("users")).Where("id=?", user.ID).
 			Updates(models.User{LastLoginTime: database.JSONTime{Time: time.Now()}, LastLoginType: 1})
@@ -94,31 +70,13 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
-	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	token,err := util.GenerateToken(auth.UserType, data)
 	if err != nil {
-		log.Fatalf(err.Error())
-	}
-
-	tokenSecretBytes, err := ioutil.ReadFile(rootDir + util.PrivateKey)
-	if err != nil {
-		ctx.JSON(http.StatusOK, util.ToastFail("TOKEN生成错误", 1))
-		return
-	}
-	tokenSecret, err := jwt.ParseRSAPrivateKeyFromPEM(tokenSecretBytes)
-	if err != nil {
-		ctx.JSON(http.StatusOK, util.ToastFail("TOKEN生成错误", 1))
-		return
-	}
-	token, err := tokenMethod.SignedString(tokenSecret)
-	if err != nil {
-		ctx.JSON(http.StatusOK, util.ToastFail("TOKEN生成错误", 1))
+		ctx.JSON(http.StatusOK, util.ToastFail(err.Error(), 1))
 		return
 	}
 
-	ctx.JSON(http.StatusOK, util.ToastSuccess(util.TokenData{
-		Token: token,
-		Expire: expire,
-	}))
+	ctx.JSON(http.StatusOK, util.ToastSuccess(token))
 }
 
 // 用户注册
