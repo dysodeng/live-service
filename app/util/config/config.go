@@ -2,7 +2,13 @@ package config
 
 import (
 	"os"
+	"path/filepath"
+	"io/ioutil"
+	"log"
+	"gopkg.in/yaml.v2"
 )
+
+var configFileData []byte
 
 // 主配置
 type AppConfig struct {
@@ -20,6 +26,8 @@ type App struct {
 	AliOss AliOss
 	FileLocal FileLocal
 	Filesystem Filesystem
+	Sms Sms
+	Config Config
 }
 
 // 数据库
@@ -72,6 +80,31 @@ type FileLocal struct {
 	RootPath string
 }
 
+// 短信配置
+type Sms struct {
+	SmsSender string
+	SignName string
+	AccessId string
+	AccessKey string
+	AliTopAppKey string
+	AliTopSecretKey string
+}
+
+// 固定配置
+type Config struct {
+	// 短信模版
+	SmsTemplate struct{
+		Register struct{
+			TemplateId string	`yaml:"template_id"`
+			Name string			`yaml:"name"`
+			Params uint8		`yaml:"params"`
+		} `yaml:"register"`
+	} `yaml:"sms_template"`
+
+	// 短信验证码过期时间(分钟)
+	ValidCodeExpire int64	`yaml:"valid_code_expire"`
+}
+
 // 获取配置信息
 func GetAppConfig()(e AppConfig, err error) {
 
@@ -104,6 +137,40 @@ func GetAppConfig()(e AppConfig, err error) {
 	e.App.FileLocal.RootPath = os.Getenv("root_path")
 
 	e.App.Filesystem.Storage =  os.Getenv("default_storage")
+
+	e.App.Sms.SmsSender = os.Getenv("sms_sender")
+	e.App.Sms.SignName = os.Getenv("sms_sign_name")
+	e.App.Sms.AccessId = os.Getenv("sms_access_id")
+	e.App.Sms.AccessKey = os.Getenv("sms_access_key")
+
+	if e.App.Sms.AccessId == "" {
+		e.App.Sms.AccessId = e.App.AliOss.AccessId
+		e.App.Sms.AccessKey = e.App.AliOss.AccessKey
+	}
+	e.App.Sms.AliTopAppKey = os.Getenv("ali_top_app_key")
+	e.App.Sms.AliTopSecretKey = os.Getenv("ali_top_secret_key")
+
+	// 固定配置
+	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+
+	configFileData, err = ioutil.ReadFile(rootDir+"/config/app.yml")
+	if err != nil {
+		configFileData, err = ioutil.ReadFile(rootDir+"/config/app.yaml")
+		if err != nil {
+			log.Fatalf("read config file err %v ", err)
+		}
+	}
+
+	var c Config
+
+	err = yaml.Unmarshal(configFileData, &c)
+	if err != nil {
+		return e, err
+	}
+
+	log.Println(c)
+
+	e.App.Config = c
 
 	return e, nil
 }

@@ -13,6 +13,8 @@ RUN go get github.com/go-sql-driver/mysql && go get -u github.com/jinzhu/gorm \
  && go get github.com/gomodule/redigo/redis && go get github.com/astaxie/beego/cache \
  && go get github.com/dgrijalva/jwt-go && go get github.com/aliyun/aliyun-oss-go-sdk/oss
 
+RUN go get gopkg.in/yaml.v2
+
 WORKDIR /go/src/live-service
 
 EXPOSE 8080

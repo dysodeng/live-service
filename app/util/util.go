@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 	"math/rand"
+	"strings"
+	"fmt"
 )
 
 // 时区
@@ -64,4 +66,16 @@ func CreateOrderNo() string {
 
 	sTime += c + strconv.FormatInt(rand.Int63n(9999 - 1000) + 1000, 10)
 	return sTime
+}
+
+func GenValidateCode(width int) string {
+	numeric := [10]byte{0,1,2,3,4,5,6,7,8,9}
+	r := len(numeric)
+	rand.Seed(time.Now().UnixNano())
+
+	var sb strings.Builder
+	for i := 0; i < width; i++ {
+		fmt.Fprintf(&sb, "%d", numeric[ rand.Intn(r) ])
+	}
+	return sb.String()
 }

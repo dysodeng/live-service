@@ -11,6 +11,7 @@ import (
 	file2 "live-service/app/support/file"
 	cache2 "live-service/app/util/cache"
 	"time"
+	"live-service/app/support/message"
 )
 
 type Test struct {
@@ -201,4 +202,21 @@ func Cache(ctx *gin.Context) {
 	result = cache.Get("abc")
 
 	log.Println(string(result.([]byte)))
+}
+
+func Sms(ctx *gin.Context) {
+	telephone := ctx.DefaultQuery("telephone", "")
+	err := message.SendSmsCode(telephone, "register")
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func ValidSmsCode(ctx *gin.Context) {
+	code := ctx.DefaultQuery("sms_code", "")
+	telephone := ctx.DefaultQuery("telephone", "")
+	err := message.ValidSmsCode(telephone, "register", code)
+	if err != nil {
+		log.Println(err)
+	}
 }

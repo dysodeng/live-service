@@ -1,0 +1,7 @@
+sms_template:
+  register:
+    template_id: 'SMS_54640020'
+    name: '注册验证'
+    params: 2
+
+valid_code_expire: 10
