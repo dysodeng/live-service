@@ -93,8 +93,8 @@ type Sms struct {
 // 固定配置
 type Config struct {
 	// 短信模版
-	SmsTemplate struct{
-		Register struct{
+	SmsTemplate struct {
+		Register struct {
 			TemplateId string	`yaml:"template_id"`
 			Name string			`yaml:"name"`
 			Params uint8		`yaml:"params"`
