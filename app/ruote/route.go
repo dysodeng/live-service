@@ -19,6 +19,7 @@ func GetRouter() *gin.Engine {
 		apiAuth := api.Group("/auth")
 		{
 			apiAuth.POST("/login", auth.Login)
+			apiAuth.POST("/refresh_token", auth.RefreshToken)
 			apiAuth.POST("/register", auth.Register)
 		}
 		api.POST("/test", room.TestFile)
