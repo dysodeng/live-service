@@ -34,14 +34,19 @@ type Storage interface {
 	// 创建目录
 	MkDir(dir string, mode os.FileMode) (bool, error)
 
-	// 获取授权资源
+	// 获取授权资源路径
 	SignUrl(object string) string
+
+	// 获取原始资源路径
+	OriginalObject(object string) string
 }
 
 // 阿里云存储
 type AliOssStorage struct {
 	client *oss.Client
 	bucket *oss.Bucket
+	endpoint string
+	bucketName string
 }
 
 // create alioss storage
@@ -66,6 +71,9 @@ func NewAliOssStorage() Storage {
 		log.Fatalf("alioss bucket error:"+err.Error())
 	}
 	aliStorage.bucket = bucket
+
+	aliStorage.bucketName = conf.App.AliOss.BucketName
+	aliStorage.endpoint = conf.App.AliOss.EndPoint
 
 	var storage Storage = aliStorage
 
@@ -150,6 +158,10 @@ func (storage *AliOssStorage) SignUrl(object string) string {
 	}
 
 	return strings.Replace(signUrl, "http://", "https://", 1)
+}
+
+func (storage *AliOssStorage) OriginalObject(object string) string {
+	return strings.Replace(object, "https://"+storage.bucketName+"."+storage.endpoint, "", 1)
 }
 
 // 本地存储器
@@ -252,5 +264,9 @@ func (storage *LocalStorage) MkDir(dir string, mode os.FileMode) (bool, error) {
 }
 
 func (storage *LocalStorage) SignUrl(object string) string {
+	return object
+}
+
+func (storage *LocalStorage) OriginalObject(object string) string {
 	return object
 }

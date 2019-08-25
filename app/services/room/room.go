@@ -164,7 +164,7 @@ func TestFile(ctx *gin.Context) {
 	}
 	log.Println(result)
 	if result.FullPath != "" {
-		result.FullPath = file.SignUrl(result.FullPath)
+		result.FullPath = file.SignObject(result.FullPath)
 	}
 	ctx.JSON(http.StatusOK, result)
 
@@ -185,7 +185,7 @@ func File(ctx *gin.Context) {
 	} else {
 		log.Println("文件不存在")
 	}
-	url := file.SignUrl("user/1/2019-06-24/user12019062403432497212422499.png")
+	url := file.SignObject("user/1/2019-06-24/user12019062403432497212422499.png")
 	log.Println(url)
 	//file.DeleteFile("user/1/2019-06-24/user12019062403432497212422499.png")
 }

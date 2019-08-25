@@ -8,7 +8,6 @@ import (
 )
 
 type Filesystem struct {
-	uploader *Uploader
 	storage Storage
 	userType string
 	userId	int64
@@ -62,8 +61,6 @@ func NewFilesystem(userType string, userId int64) *Filesystem {
 		log.Fatalf("file storage error:"+conf.App.Filesystem.Storage)
 	}
 
-	file.uploader = NewUploader(file.storage)
-
 	return file
 }
 
@@ -83,11 +80,12 @@ func (filesystem *Filesystem) DeleteFile(filePath string) (bool, error) {
 }
 
 // 获取授权资源
-func (filesystem *Filesystem) SignUrl(filePath string) string {
+func (filesystem *Filesystem) SignObject(filePath string) string {
 	return filesystem.storage.SignUrl(filePath)
 }
 
 // 文件上传
 func (filesystem *Filesystem) Uploader(file *multipart.FileHeader) (Info, error) {
-	return filesystem.uploader.Upload(filesystem.userType, filesystem.userId, file)
+	uploader := NewUploader(filesystem.storage)
+	return uploader.Upload(filesystem.userType, filesystem.userId, file)
 }
