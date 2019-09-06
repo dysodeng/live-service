@@ -1,10 +1,10 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
-	"strings"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 )
 
 // 跨域处理

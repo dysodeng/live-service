@@ -2,9 +2,9 @@ package ruote
 
 import (
 	"github.com/gin-gonic/gin"
+	"live-service/app/middleware"
 	"live-service/app/services/auth"
 	"live-service/app/services/room"
-	"live-service/app/middleware"
 )
 
 // 获取路由

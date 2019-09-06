@@ -1,21 +1,21 @@
 package file
 
 import (
-	"mime/multipart"
-	"strconv"
+	"crypto/md5"
+	"crypto/sha1"
+	"encoding/hex"
 	"errors"
+	"image"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
+	"io"
 	"live-service/app/util"
 	"log"
+	"mime/multipart"
+	"strconv"
 	"strings"
 	"time"
-	"crypto/md5"
-	"io"
-	"encoding/hex"
-	"crypto/sha1"
-	"image"
-	_ "image/jpeg"
-	_ "image/gif"
-	_ "image/png"
 )
 
 type Uploader struct {
@@ -80,12 +80,12 @@ func (uploader *Uploader) Upload(userType string, userId int64, fileHeader *mult
 
 	// 计算文件md5
 	fileMd5 := md5.New()
-	io.Copy(fileMd5, file)
+	_, _ = io.Copy(fileMd5, file)
 	md5String := hex.EncodeToString(fileMd5.Sum(nil))
 
 	// 计算文件sha1
 	fileSha1 := sha1.New()
-	io.Copy(fileSha1, file)
+	_, _ = io.Copy(fileSha1, file)
 	sha1String := hex.EncodeToString(fileSha1.Sum(nil))
 
 	savePath := time.Now().Format("2006-01-02") + "/"

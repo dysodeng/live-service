@@ -1,17 +1,17 @@
 package message
 
 import (
-	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
-	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
-	"log"
-	"live-service/app/util/config"
 	"encoding/json"
 	"errors"
-	"live-service/app/util"
-	"live-service/app/util/database"
 	"fmt"
-	"time"
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
+	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
 	baseRedis "github.com/gomodule/redigo/redis"
+	"live-service/app/util"
+	"live-service/app/util/config"
+	"live-service/app/util/database"
+	"log"
+	"time"
 )
 
 type SmsCode struct {
@@ -176,7 +176,7 @@ func SendSmsCode(phoneNumber string, template string) error {
 
 	key := "sms_code_"+template+":"+phoneNumber
 
-	redis.Do("DEL", key)
+	_, _ = redis.Do("DEL", key)
 
 	smsCode := SmsCode{
 		Code: templateParam["code"],
@@ -190,7 +190,7 @@ func SendSmsCode(phoneNumber string, template string) error {
 	if err != nil {
 		return err
 	}
-	redis.Do("EXPIRE", key, conf.App.Config.ValidCodeExpire * 60)
+	_, _ = redis.Do("EXPIRE", key, conf.App.Config.ValidCodeExpire*60)
 	log.Println(result)
 
 	var sender SmsSender
@@ -243,7 +243,7 @@ func ValidSmsCode(phoneNumber string, template string, smsCode string) error {
 			return errors.New("验证码错误")
 		}
 
-		redis.Do("DEL", key)
+		_, _ = redis.Do("DEL", key)
 	} else {
 		return errors.New("验证码已过期，请重新获取")
 	}

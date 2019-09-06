@@ -1,15 +1,15 @@
 package middleware
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
-	"live-service/app/util"
-	"path/filepath"
-	"os"
-	"log"
-	"io/ioutil"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"live-service/app/util"
 	"live-service/app/util/config"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
 )
 
 type AuthUser struct {

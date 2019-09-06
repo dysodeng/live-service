@@ -2,14 +2,14 @@ package util
 
 import (
 	"encoding/json"
-	"github.com/dgrijalva/jwt-go"
-	"time"
-	"path/filepath"
-	"os"
-	"log"
-	"io/ioutil"
 	"errors"
+	"github.com/dgrijalva/jwt-go"
+	"io/ioutil"
 	"live-service/app/util/config"
+	"log"
+	"os"
+	"path/filepath"
+	"time"
 )
 
 const (
@@ -36,7 +36,7 @@ func GenerateToken(userType string, data map[string]interface{}) (TokenData, err
 
 	conf,err := config.GetAppConfig()
 	if err != nil {
-
+		log.Fatalf("read config err %v ", err)
 	}
 
 	switch userType {

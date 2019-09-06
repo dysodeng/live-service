@@ -2,16 +2,16 @@ package room
 
 import (
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"live-service/app/util"
 	"live-service/app/models"
-	"live-service/app/util/database"
-	"strconv"
-	"log"
 	file2 "live-service/app/support/file"
-	cache2 "live-service/app/util/cache"
-	"time"
 	"live-service/app/support/message"
+	"live-service/app/util"
+	cache2 "live-service/app/util/cache"
+	"live-service/app/util/database"
+	"log"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 type Test struct {
@@ -192,13 +192,13 @@ func File(ctx *gin.Context) {
 
 func Cache(ctx *gin.Context) {
 	cache := cache2.GetCache()
-	cache.Put("abc", 1, 100*time.Second)
+	_ = cache.Put("abc", 1, 100*time.Second)
 
 	result := cache.Get("abc")
 
 	log.Println(string(result.([]byte)))
 
-	cache.Incr("abc")
+	_ = cache.Incr("abc")
 	result = cache.Get("abc")
 
 	log.Println(string(result.([]byte)))

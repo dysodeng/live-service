@@ -2,8 +2,8 @@ package models
 
 import (
 	"live-service/app/util/config"
-	"log"
 	"live-service/app/util/database"
+	"log"
 )
 
 // 用户

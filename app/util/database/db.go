@@ -5,9 +5,9 @@ import (
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"live-service/app/util/config"
 	"log"
-	"time"
-	"strconv"
 	"math/rand"
+	"strconv"
+	"time"
 )
 
 // get database connect

@@ -1,18 +1,18 @@
 package auth
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
-	"live-service/app/util"
-	"live-service/app/util/database"
-	"live-service/app/models"
-	"time"
-	"path/filepath"
-	"os"
-	"log"
-	"io/ioutil"
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
+	"io/ioutil"
+	"live-service/app/models"
+	"live-service/app/util"
 	"live-service/app/util/config"
+	"live-service/app/util/database"
+	"log"
+	"net/http"
+	"os"
+	"path/filepath"
+	"time"
 )
 
 type LoginAuth struct {

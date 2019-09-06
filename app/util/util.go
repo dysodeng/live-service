@@ -1,13 +1,13 @@
 package util
 
 import (
+	"fmt"
 	"golang.org/x/crypto/bcrypt"
 	"log"
-	"strconv"
-	"time"
 	"math/rand"
+	"strconv"
 	"strings"
-	"fmt"
+	"time"
 )
 
 // 时区
@@ -76,7 +76,7 @@ func GenValidateCode(width int) string {
 
 	var sb strings.Builder
 	for i := 0; i < width; i++ {
-		fmt.Fprintf(&sb, "%d", numeric[ rand.Intn(r) ])
+		_, _ = fmt.Fprintf(&sb, "%d", numeric[ rand.Intn(r) ])
 	}
 	return sb.String()
 }

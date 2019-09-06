@@ -1,16 +1,16 @@
 package message
 
 import (
-	"time"
-	"sort"
-	"fmt"
 	"crypto/md5"
-	"strings"
-	"net/url"
 	"encoding/json"
-	"net/http"
-	"io/ioutil"
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"net/url"
+	"sort"
+	"strings"
+	"time"
 )
 
 type TopClient struct {

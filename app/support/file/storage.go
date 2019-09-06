@@ -2,15 +2,15 @@ package file
 
 import (
 	"github.com/aliyun/aliyun-oss-go-sdk/oss"
+	"io"
+	"io/ioutil"
+	"live-service/app/util"
 	"live-service/app/util/config"
 	"log"
-	"io/ioutil"
-	"io"
 	"mime/multipart"
-	"strings"
-	"live-service/app/util"
-	"path/filepath"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 // 文件存储器接口

@@ -1,9 +1,9 @@
 package database
 
 import (
-	"time"
-	"fmt"
 	"database/sql/driver"
+	"fmt"
+	"time"
 )
 
 // JSONTime format json time field by myself

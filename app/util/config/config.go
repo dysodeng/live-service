@@ -1,11 +1,11 @@
 package config
 
 import (
-	"os"
-	"path/filepath"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
-	"gopkg.in/yaml.v2"
+	"os"
+	"path/filepath"
 )
 
 var configFileData []byte
