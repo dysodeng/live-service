@@ -147,7 +147,11 @@ func (top *AliTopSmsSender) Send() (bool, error) {
 
 // 发送验证码
 func SendSmsCode(phoneNumber string, template string) error {
-	conf,err := config.GetAppConfig()
+	appConf,err := config.GetAppConfig()
+	if err != nil {
+		log.Fatalln(err)
+	}
+	smsConf,err := config.GetSmsConfig()
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -156,13 +160,13 @@ func SendSmsCode(phoneNumber string, template string) error {
 	templateParam := make(map[string]string)
 	switch template {
 	case "register":
-		templateCode = conf.App.Config.SmsTemplate.Register.TemplateId
-		if conf.App.Config.SmsTemplate.Register.Params > 1 {
-			templateParam["time"] = fmt.Sprintf("%d", conf.App.Config.ValidCodeExpire)+"分钟"
+		templateCode = smsConf.SmsTemplate.Register.TemplateId
+		if smsConf.SmsTemplate.Register.Params > 1 {
+			templateParam["time"] = fmt.Sprintf("%d", smsConf.ValidCodeExpire)+"分钟"
 		}
 		break
 	default:
-		return errors.New("sms storage error:"+conf.App.Sms.SmsSender)
+		return errors.New("sms storage error:"+appConf.App.Sms.SmsSender)
 	}
 
 	templateParam["code"] = util.GenValidateCode(6) // 验证码
@@ -181,7 +185,7 @@ func SendSmsCode(phoneNumber string, template string) error {
 	smsCode := SmsCode{
 		Code: templateParam["code"],
 		Time: time.Now().Unix(),
-		Expire: conf.App.Config.ValidCodeExpire,
+		Expire: smsConf.ValidCodeExpire,
 	}
 	log.Println(smsCode)
 	log.Println(smsCode.Time + smsCode.Expire * 60)
@@ -190,12 +194,12 @@ func SendSmsCode(phoneNumber string, template string) error {
 	if err != nil {
 		return err
 	}
-	_, _ = redis.Do("EXPIRE", key, conf.App.Config.ValidCodeExpire*60)
+	_, _ = redis.Do("EXPIRE", key, smsConf.ValidCodeExpire*60)
 	log.Println(result)
 
 	var sender SmsSender
 
-	switch conf.App.Sms.SmsSender {
+	switch appConf.App.Sms.SmsSender {
 	case "aliyun":
 		sender = NewAliYunSms(phoneNumber, templateCode, templateParam)
 		break
@@ -203,7 +207,7 @@ func SendSmsCode(phoneNumber string, template string) error {
 		sender = NewAliTopSms(phoneNumber, templateCode, templateParam)
 		break
 	default:
-		return errors.New("sms storage error:"+conf.App.Sms.SmsSender)
+		return errors.New("sms storage error:"+appConf.App.Sms.SmsSender)
 	}
 
 	_,err = sender.Send()

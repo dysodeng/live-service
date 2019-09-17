@@ -27,7 +27,6 @@ type App struct {
 	FileLocal FileLocal
 	Filesystem Filesystem
 	Sms Sms
-	Config Config
 }
 
 // 数据库
@@ -90,8 +89,8 @@ type Sms struct {
 	AliTopSecretKey string
 }
 
-// 固定配置
-type Config struct {
+// 短信模版配置
+type SmsConfig struct {
 	// 短信模版
 	SmsTemplate struct {
 		Register struct {
@@ -150,27 +149,30 @@ func GetAppConfig()(e AppConfig, err error) {
 	e.App.Sms.AliTopAppKey = os.Getenv("ali_top_app_key")
 	e.App.Sms.AliTopSecretKey = os.Getenv("ali_top_secret_key")
 
+	return e, nil
+}
+
+// 获取短信模版配置
+func GetSmsConfig() (e SmsConfig, err error) {
 	// 固定配置
 	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 
-	configFileData, err = ioutil.ReadFile(rootDir+"/config/app.yml")
+	configFileData, err = ioutil.ReadFile(rootDir+"/config/sms.yml")
 	if err != nil {
-		configFileData, err = ioutil.ReadFile(rootDir+"/config/app.yaml")
+		configFileData, err = ioutil.ReadFile(rootDir+"/config/sms.yaml")
 		if err != nil {
 			log.Fatalf("read config file err %v ", err)
 		}
 	}
 
-	var c Config
+	var c SmsConfig
 
 	err = yaml.Unmarshal(configFileData, &c)
 	if err != nil {
-		return e, err
+		return c, err
 	}
 
 	log.Println(c)
 
-	e.App.Config = c
-
-	return e, nil
+	return c, nil
 }
