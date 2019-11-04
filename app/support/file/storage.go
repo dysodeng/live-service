@@ -164,6 +164,13 @@ func (storage *AliOssStorage) OriginalObject(object string) string {
 	return strings.Replace(object, "https://"+storage.bucketName+"."+storage.endpoint, "", 1)
 }
 
+// 七牛云存储
+type QiNiuStorage struct {
+	zone string
+	useHttps bool
+	useCdnDomains bool
+}
+
 // 本地存储器
 type LocalStorage struct {
 	rootPath string
