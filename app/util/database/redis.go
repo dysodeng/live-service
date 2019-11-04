@@ -5,16 +5,28 @@ import (
 	"live-service/app/util/config"
 )
 
-func GetRedis() (redis.Conn, error) {
-	conf,err := config.GetAppConfig()
-	if err != nil {
-		return nil, err
-	}
+// redis 连接池
+var pool *redis.Pool
 
-	conn, err := redis.Dial("tcp", conf.App.Redis.Host+":"+conf.App.Redis.Port)
-	if err != nil {
-		return nil, err
-	}
+// redis 连接初始化
+func init() {
+	conf, _ := config.GetAppConfig()
 
-	return conn, nil
+	pool = &redis.Pool{
+		Dial: func() (conn redis.Conn, e error) {
+			return redis.Dial(
+				"tcp", conf.App.Redis.Host+":"+conf.App.Redis.Port,
+				redis.DialPassword(conf.App.Redis.Password),
+				redis.DialDatabase(conf.App.Redis.DataBase),
+			)
+		},
+		MaxIdle:         10,
+		MaxActive:       7,
+		Wait:            true,
+	}
+}
+
+// 从连接池中获取redis连接
+func GetRedis() redis.Conn {
+	return pool.Get()
 }

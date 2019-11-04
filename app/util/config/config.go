@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 var configFileData []byte
@@ -45,6 +46,7 @@ type Redis struct {
 	Host string
 	Port string
 	Password string
+	DataBase int
 }
 
 // MemCached
@@ -110,6 +112,7 @@ func GetAppConfig()(e AppConfig, err error) {
 	e.App.AppName = "live-service"
 	e.App.Domain = os.Getenv("domain")
 
+	// 数据库配置
 	e.App.DataBase.Connection = "mysql"
 	e.App.DataBase.Host = os.Getenv("mysql_host")
 	e.App.DataBase.Port = os.Getenv("mysql_port")
@@ -118,23 +121,35 @@ func GetAppConfig()(e AppConfig, err error) {
 	e.App.DataBase.Password = os.Getenv("mysql_password")
 	e.App.DataBase.Prefix = os.Getenv("mysql_table_prefix")
 
+	// redis 配置
 	e.App.Redis.Host = os.Getenv("redis_host")
 	e.App.Redis.Port = os.Getenv("redis_port")
 	e.App.Redis.Password = os.Getenv("redis_password")
+	redisDatabaseString := os.Getenv("redis_database")
+	redisDatabase, err := strconv.Atoi(redisDatabaseString)
+	if err != nil {
+		redisDatabase = 0
+	}
+	e.App.Redis.DataBase = redisDatabase
 
+	// memcache 配置
 	e.App.MemCache.Host = os.Getenv("memcache_host")
 	e.App.MemCache.Port = os.Getenv("memcache_port")
 
+	// 缓存配置
 	e.App.Cache.Driver = os.Getenv("cache_driver")
 
+	// 阿里云oss配置
 	e.App.AliOss.AccessId = os.Getenv("oss_access_id")
 	e.App.AliOss.AccessKey = os.Getenv("oss_access_key")
 	e.App.AliOss.EndPoint = os.Getenv("oss_end_point")
 	e.App.AliOss.EndPointInternal = os.Getenv("oss_end_point_internal")
 	e.App.AliOss.BucketName = os.Getenv("oss_bucket_name")
 
+	// 文件上传配置
 	e.App.FileLocal.RootPath = os.Getenv("root_path")
 
+	//
 	e.App.Filesystem.Storage =  os.Getenv("default_storage")
 
 	e.App.Sms.SmsSender = os.Getenv("sms_sender")

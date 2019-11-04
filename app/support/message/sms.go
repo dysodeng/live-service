@@ -172,10 +172,7 @@ func SendSmsCode(phoneNumber string, template string) error {
 	templateParam["code"] = util.GenValidateCode(6) // 验证码
 
 	// 验证码缓存
-	redis,err := database.GetRedis()
-	if err != nil {
-		return errors.New("redis init error")
-	}
+	redis := database.GetRedis()
 	defer redis.Close()
 
 	key := "sms_code_"+template+":"+phoneNumber
@@ -221,10 +218,7 @@ func SendSmsCode(phoneNumber string, template string) error {
 // 验证短信验证码
 func ValidSmsCode(phoneNumber string, template string, smsCode string) error {
 	// 验证码缓存
-	redis,err := database.GetRedis()
-	if err != nil {
-		return errors.New("redis init error")
-	}
+	redis := database.GetRedis()
 	defer redis.Close()
 
 	key := "sms_code_"+template+":"+phoneNumber
