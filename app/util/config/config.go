@@ -149,9 +149,10 @@ func GetAppConfig()(e AppConfig, err error) {
 	// 文件上传配置
 	e.App.FileLocal.RootPath = os.Getenv("root_path")
 
-	//
+	// 文件系统配置
 	e.App.Filesystem.Storage =  os.Getenv("default_storage")
 
+	// 短信配置
 	e.App.Sms.SmsSender = os.Getenv("sms_sender")
 	e.App.Sms.SignName = os.Getenv("sms_sign_name")
 	e.App.Sms.AccessId = os.Getenv("sms_access_id")
