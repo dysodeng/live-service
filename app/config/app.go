@@ -97,6 +97,7 @@ func initAppConfig() {
 
 	config = &AppConfig{
 		App: App{
+			// 项目配置
 			AppName:    "live-service",
 			Domain:     os.Getenv("domain"),
 
