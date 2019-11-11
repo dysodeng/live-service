@@ -17,10 +17,7 @@ func GetDb() *gorm.DB {
 	var dsn string
 	var DB *gorm.DB
 
-	conf, confErr := config.GetAppConfig()
-	if confErr != nil {
-		log.Fatalf("read database config err %v ", confErr)
-	}
+	conf := config.GetAppConfig()
 
 	dsn = conf.App.DataBase.UserName+":"+conf.App.DataBase.Password+"@tcp("+conf.App.DataBase.Host+":"+conf.App.DataBase.Port+")/"
 	dsn += conf.App.DataBase.DataBase+"?charset=utf8&parseTime=True&loc=Asia%2FShanghai"
@@ -40,21 +37,13 @@ func GetDb() *gorm.DB {
 
 // get full table name
 func FullTableName(tableName string) string {
-	conf, confErr := config.GetAppConfig()
-	if confErr != nil {
-		log.Fatalf("read database config err %v ", confErr)
-	}
-
+	conf := config.GetAppConfig()
 	return conf.App.DataBase.Prefix + tableName
 }
 
 // get table prefix
 func GetTablePrefix() string {
-	conf, confErr := config.GetAppConfig()
-	if confErr != nil {
-		log.Fatalf("read database config err %v ", confErr)
-	}
-
+	conf := config.GetAppConfig()
 	return conf.App.DataBase.Prefix
 }
 

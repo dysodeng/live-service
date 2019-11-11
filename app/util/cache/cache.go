@@ -11,10 +11,7 @@ import (
 // 获取缓存实例
 func GetCache() cache.Cache {
 
-	conf, err := config.GetAppConfig()
-	if err != nil {
-		log.Fatalf("app config error: %s", err)
-	}
+	conf := config.GetAppConfig()
 
 	cacheConfig := map[string]string{}
 

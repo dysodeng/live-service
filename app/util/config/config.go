@@ -107,7 +107,7 @@ type SmsConfig struct {
 }
 
 // 获取配置信息
-func GetAppConfig()(e AppConfig, err error) {
+func GetAppConfig()(e AppConfig) {
 
 	e.App.AppName = "live-service"
 	e.App.Domain = os.Getenv("domain")
@@ -165,11 +165,11 @@ func GetAppConfig()(e AppConfig, err error) {
 	e.App.Sms.AliTopAppKey = os.Getenv("ali_top_app_key")
 	e.App.Sms.AliTopSecretKey = os.Getenv("ali_top_secret_key")
 
-	return e, nil
+	return e
 }
 
 // 获取短信模版配置
-func GetSmsConfig() (e SmsConfig, err error) {
+func GetSmsConfig() (e SmsConfig) {
 	// 固定配置
 	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 
@@ -185,10 +185,10 @@ func GetSmsConfig() (e SmsConfig, err error) {
 
 	err = yaml.Unmarshal(configFileData, &c)
 	if err != nil {
-		return c, err
+		return c
 	}
 
 	log.Println(c)
 
-	return c, nil
+	return c
 }

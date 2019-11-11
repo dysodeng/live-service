@@ -2,7 +2,6 @@ package models
 
 import (
 	"live-service/app/util/config"
-	"log"
 )
 
 // 房间表
@@ -13,9 +12,6 @@ type Room struct {
 }
 
 func (Room) TableName() string {
-	conf,err := config.GetAppConfig()
-	if err != nil {
-		log.Fatalf("read database config err %v ", err)
-	}
+	conf := config.GetAppConfig()
 	return conf.App.DataBase.Prefix + "room"
 }

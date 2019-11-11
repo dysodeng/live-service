@@ -34,10 +34,7 @@ func GenerateToken(userType string, data map[string]interface{}) (TokenData, err
 	var expire int64
 	var refreshTokenExpire int64
 
-	conf,err := config.GetAppConfig()
-	if err != nil {
-		log.Fatalf("read config err %v ", err)
-	}
+	conf := config.GetAppConfig()
 
 	switch userType {
 	case "user":

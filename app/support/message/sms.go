@@ -36,10 +36,7 @@ type AliYunSmsSender struct {
 }
 
 func NewAliYunSms(phoneNumber string, templateCode string, templateParam map[string]string) SmsSender {
-	conf,err := config.GetAppConfig()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	conf := config.GetAppConfig()
 
 	sender := new(AliYunSmsSender)
 
@@ -104,10 +101,7 @@ type AliTopSmsSender struct {
 }
 
 func NewAliTopSms(phoneNumber string, templateCode string, templateParam map[string]string) SmsSender {
-	conf,err := config.GetAppConfig()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	conf := config.GetAppConfig()
 
 	sender := new(AliTopSmsSender)
 	sender.accessKey = conf.App.Sms.AliTopAppKey
@@ -147,14 +141,8 @@ func (top *AliTopSmsSender) Send() (bool, error) {
 
 // 发送验证码
 func SendSmsCode(phoneNumber string, template string) error {
-	appConf,err := config.GetAppConfig()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	smsConf,err := config.GetSmsConfig()
-	if err != nil {
-		log.Fatalln(err)
-	}
+	appConf := config.GetAppConfig()
+	smsConf := config.GetSmsConfig()
 
 	var templateCode string
 	templateParam := make(map[string]string)

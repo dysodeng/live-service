@@ -54,21 +54,24 @@ func NewAliOssStorage() Storage {
 
 	aliStorage := new(AliOssStorage)
 
-	conf,err := config.GetAppConfig()
-	if err != nil {
-		log.Fatalf("get config error:"+err.Error())
-	}
+	conf := config.GetAppConfig()
+
+	defer func() {
+		if err := recover(); err !=nil {
+			log.Println(err)
+		}
+	}()
 
 	client,err := oss.New(conf.App.AliOss.EndPoint, conf.App.AliOss.AccessId, conf.App.AliOss.AccessKey)
 	if err != nil {
-		log.Fatalf("alioss connect error:"+err.Error())
+		panic("alioss connect error:"+err.Error())
 	}
 
 	aliStorage.client = client
 
 	bucket,err := client.Bucket(conf.App.AliOss.BucketName)
 	if err != nil {
-		log.Fatalf("alioss bucket error:"+err.Error())
+		panic("alioss bucket error:"+err.Error())
 	}
 	aliStorage.bucket = bucket
 
@@ -178,15 +181,19 @@ type LocalStorage struct {
 
 func NewLocalStorage() Storage {
 
-	conf,err := config.GetAppConfig()
-	if err != nil {
-		log.Fatalf("get config error:"+err.Error())
-	}
+	conf := config.GetAppConfig()
+
+	defer func() {
+		if ok := recover(); ok != nil {
+			log.Println(ok)
+		}
+	}()
 
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))  //返回绝对路径  filepath.Dir(os.Args[0])去除最后一个元素的路径
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
+
 	root := strings.Replace(dir, "\\", "/", -1)
 
 	localStorage := new(LocalStorage)

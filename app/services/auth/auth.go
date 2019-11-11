@@ -120,10 +120,7 @@ func RefreshToken(ctx *gin.Context) {
 		return
 	}
 
-	conf,err := config.GetAppConfig()
-	if err != nil {
-		return
-	}
+	conf := config.GetAppConfig()
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if claims["aud"] != conf.App.Domain || claims["iss"] != conf.App.Domain + "/api/auth" {

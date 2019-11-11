@@ -10,7 +10,7 @@ var pool *redis.Pool
 
 // redis 连接初始化
 func init() {
-	conf, _ := config.GetAppConfig()
+	conf := config.GetAppConfig()
 
 	pool = &redis.Pool{
 		Dial: func() (conn redis.Conn, e error) {

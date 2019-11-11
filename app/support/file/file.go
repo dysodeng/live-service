@@ -39,10 +39,7 @@ type Info struct {
 func NewFilesystem(userType string, userId int64) *Filesystem {
 
 	file := new(Filesystem)
-	conf,err := config.GetAppConfig()
-	if err != nil {
-		log.Fatalf("get config error:"+err.Error())
-	}
+	conf := config.GetAppConfig()
 
 	if userType != "user" {
 		log.Fatalf("user type error")
