@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"io/ioutil"
-	"live-service/app/util/config"
+	"live-service/app/config"
 	"log"
 	"os"
 	"path/filepath"
@@ -36,6 +36,12 @@ func GenerateToken(userType string, data map[string]interface{}) (TokenData, err
 
 	conf := config.GetAppConfig()
 
+	defer func() {
+		if err:=recover(); err != nil {
+			log.Println(err)
+		}
+	}()
+
 	switch userType {
 	case "user":
 		expire = 24 * 3600
@@ -64,9 +70,16 @@ func GenerateToken(userType string, data map[string]interface{}) (TokenData, err
 
 	}
 
+	if tokenMethod == nil {
+		panic("token error")
+	}
+	if refreshTokenMethod == nil {
+		panic("refresh error")
+	}
+
 	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		log.Fatalf(err.Error())
+		panic(err.Error())
 	}
 
 	// token

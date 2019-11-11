@@ -6,8 +6,8 @@ services:
     image: live.service
     build:
       context: .
-      dockerfile: ./Dockerfile
-    env_file: ./.env
+      dockerfile: Dockerfile
+    env_file: .env
     volumes:
       - ../:/go/src/live-service
     environment:
@@ -40,21 +40,21 @@ services:
     links:
       - redis-server:redis-server
 
-  # Web Server
-  agent.live.service:
-    image: daocloud.io/nginx
-    volumes:
-      - ./live-service.conf:/etc/nginx/nginx.conf:ro
-    ports:
-      - "80:80"
-    depends_on:
-      - live.service
-    links:
-      - live.service:live.service
+#  # Web Server
+#  agent.live.service:
+#    image: daocloud.io/nginx
+#    volumes:
+#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+#    ports:
+#      - "80:80"
+#    depends_on:
+#      - live.service
+#    links:
+#      - live.service:live.service
 
   # Cache Service
   redis-server:
     image: redis
     command: redis-server --appendonly yes
     volumes:
-      - /data/redis/live:/data
+      - ~/data/redis/live:/data

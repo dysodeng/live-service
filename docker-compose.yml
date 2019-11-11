@@ -1,0 +1,60 @@
+version: '2'
+
+services:
+
+  live.service:
+    image: live.service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ../:/go/src/live-service
+    environment:
+      - domain=${DOMAIN}
+      - mysql_host=${MYSQL_HOST}
+      - mysql_port=${MYSQL_PORT}
+      - mysql_database=${MYSQL_DATABASE}
+      - mysql_user=${MYSQL_USER}
+      - mysql_password=${MYSQL_PASSWORD}
+      - mysql_table_prefix=t_
+      - redis_host=${REDIS_HOST}
+      - redis_port=${REDIS_PORT}
+      - redis_database=${REDIS_DATABASE}
+      - cache_driver=${CACHE_DRIVER}
+      - oss_access_id=${OSS_ACCESS_ID}
+      - oss_access_key=${OSS_ACCESS_KEY}
+      - oss_end_point=${OSS_END_POINT}
+      - oss_end_point_internal=${OSS_END_POINT_INTERNAL}
+      - oss_bucket_name=${OSS_BUCKET_NAME}
+      - root_path=${ROOT_PATH}
+      - default_storage=${DEFAULT_STORAGE}
+      - sms_sender=${SMS_SENDER}
+      - sms_sign_name=${SMS_SIGN_NAME}
+      - sms_access_id=${SMS_ACCESS_ID}
+      - sms_access_key=${SMS_ACCESS_KEY}
+      - ali_top_app_key=${ALI_TOP_APP_KEY}
+      - ali_top_secret_key=${ALI_TOP_SECRET_KEY}
+    depends_on:
+      - redis-server
+    links:
+      - redis-server:redis-server
+
+  # Web Server
+  agent.live.service:
+    image: daocloud.io/nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "80:80"
+    depends_on:
+      - live.service
+    links:
+      - live.service:live.service
+
+  # Cache Service
+  redis-server:
+    image: redis
+    command: redis-server --appendonly yes
+    volumes:
+      - ~/data/redis/live:/data

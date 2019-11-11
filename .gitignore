@@ -5,3 +5,6 @@
 /live-service~
 /go_build_main_go
 /lastupdate.tmp
+nginx.conf
+.env
+docker-compose.yml

@@ -7,8 +7,8 @@ import (
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk"
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
 	baseRedis "github.com/gomodule/redigo/redis"
+	"live-service/app/config"
 	"live-service/app/util"
-	"live-service/app/util/config"
 	"live-service/app/util/database"
 	"log"
 	"time"
@@ -38,6 +38,12 @@ type AliYunSmsSender struct {
 func NewAliYunSms(phoneNumber string, templateCode string, templateParam map[string]string) SmsSender {
 	conf := config.GetAppConfig()
 
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+		}
+	}()
+
 	sender := new(AliYunSmsSender)
 
 	sender.accessKey = conf.App.Sms.AccessId
@@ -47,8 +53,8 @@ func NewAliYunSms(phoneNumber string, templateCode string, templateParam map[str
 	sender.templateCode = templateCode
 	param, err := json.Marshal(templateParam)
 	if err != nil {
-		log.Println("NewAliYunSms: line: 42 message:"+err.Error())
-		log.Fatalln(err)
+		log.Println("NewAliYunSms: message:"+err.Error())
+		panic(err)
 	}
 	sender.templateParam = string(param)
 
@@ -78,7 +84,7 @@ func (aliYun *AliYunSmsSender) Send() (bool, error) {
 
 	response, err := client.ProcessCommonRequest(request)
 	if err != nil {
-		log.Println("NewAliYunSms->Send: line: 74 message:"+err.Error())
+		log.Println("NewAliYunSms->Send: message:"+err.Error())
 		return false, err
 	}
 
@@ -103,6 +109,12 @@ type AliTopSmsSender struct {
 func NewAliTopSms(phoneNumber string, templateCode string, templateParam map[string]string) SmsSender {
 	conf := config.GetAppConfig()
 
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+		}
+	}()
+
 	sender := new(AliTopSmsSender)
 	sender.accessKey = conf.App.Sms.AliTopAppKey
 	sender.accessSecret = conf.App.Sms.AliTopSecretKey
@@ -112,7 +124,7 @@ func NewAliTopSms(phoneNumber string, templateCode string, templateParam map[str
 	param, err := json.Marshal(templateParam)
 	if err != nil {
 		log.Println("NewAliTopSms: line: 110 message:"+err.Error())
-		log.Fatalln(err)
+		panic(err)
 	}
 	sender.templateParam = string(param)
 
@@ -130,7 +142,7 @@ func (top *AliTopSmsSender) Send() (bool, error) {
 
 	response, err := client.Execute(req)
 	if err != nil {
-		log.Println("NewAliTopSms: line: 129 message:"+err.Error())
+		log.Println("NewAliTopSms: message:"+err.Error())
 		return false, err
 	}
 

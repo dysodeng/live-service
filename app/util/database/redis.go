@@ -2,7 +2,7 @@ package database
 
 import (
 	"github.com/gomodule/redigo/redis"
-	"live-service/app/util/config"
+	"live-service/app/config"
 )
 
 // redis 连接池

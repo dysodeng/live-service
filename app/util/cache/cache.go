@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/astaxie/beego/cache"
 	_ "github.com/astaxie/beego/cache/redis"
-	"live-service/app/util/config"
+	"live-service/app/config"
 	"log"
 )
 

@@ -1,7 +1,7 @@
 package models
 
 import (
-	"live-service/app/util/config"
+	"live-service/app/config"
 )
 
 // 房间表

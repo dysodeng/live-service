@@ -1,7 +1,7 @@
 package file
 
 import (
-	"live-service/app/util/config"
+	"live-service/app/config"
 	"log"
 	"mime/multipart"
 	"os"
@@ -38,11 +38,17 @@ type Info struct {
 
 func NewFilesystem(userType string, userId int64) *Filesystem {
 
+	defer func() {
+		if err := recover(); err != nil {
+			log.Println(err)
+		}
+	}()
+
 	file := new(Filesystem)
 	conf := config.GetAppConfig()
 
 	if userType != "user" {
-		log.Fatalf("user type error")
+		panic("user type error")
 	}
 	file.userType = userType
 	file.userId = userId
@@ -55,7 +61,7 @@ func NewFilesystem(userType string, userId int64) *Filesystem {
 		file.storage = NewLocalStorage()
 		break
 	default:
-		log.Fatalf("file storage error:"+conf.App.Filesystem.Storage)
+		panic("file storage error:"+conf.App.Filesystem.Storage)
 	}
 
 	return file
