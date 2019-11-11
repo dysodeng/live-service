@@ -8,10 +8,17 @@ import (
 	"log"
 )
 
-// 获取缓存实例
-func GetCache() cache.Cache {
+var c *cache.Cache
 
+func init() {
 	conf := config.GetAppConfig()
+
+	defer func() {
+		if err := recover(); err != nil {
+			c = nil
+			log.Println(err)
+		}
+	}()
 
 	cacheConfig := map[string]string{}
 
@@ -33,7 +40,7 @@ func GetCache() cache.Cache {
 		cacheConfig["EmbedExpiry"] = "120"
 		break
 	default:
-		log.Fatalf("cache driver error")
+		panic("cache driver error")
 	}
 
 	cacheConf, _ := json.Marshal(cacheConfig)
@@ -41,8 +48,13 @@ func GetCache() cache.Cache {
 	bm, err := cache.NewCache(conf.App.Cache.Driver, string(cacheConf))
 
 	if err != nil {
-		log.Fatalf("cache config error: %s", err)
+		panic("cache config error: "+err.Error())
 	}
 
-	return bm
+	c = &bm
+}
+
+// 获取缓存实例
+func GetCache() *cache.Cache {
+	return c
 }

@@ -191,7 +191,7 @@ func File(ctx *gin.Context) {
 }
 
 func Cache(ctx *gin.Context) {
-	cache := cache2.GetCache()
+	cache := *cache2.GetCache()
 	_ = cache.Put("abc", 1, 100*time.Second)
 
 	result := cache.Get("abc")

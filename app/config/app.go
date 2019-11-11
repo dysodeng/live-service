@@ -94,22 +94,67 @@ var sms *SmsConfig
 
 // 初始化应用配置
 func initAppConfig() {
-	config.App.AppName = "live-service"
-	config.App.Domain = os.Getenv("domain")
 
-	// 数据库配置
-	config.App.DataBase.Connection = "mysql"
-	config.App.DataBase.Host = os.Getenv("mysql_host")
-	config.App.DataBase.Port = os.Getenv("mysql_port")
-	config.App.DataBase.DataBase = os.Getenv("mysql_database")
-	config.App.DataBase.UserName = os.Getenv("mysql_user")
-	config.App.DataBase.Password = os.Getenv("mysql_password")
-	config.App.DataBase.Prefix = os.Getenv("mysql_table_prefix")
+	config = &AppConfig{
+		App: App{
+			AppName:    "live-service",
+			Domain:     os.Getenv("domain"),
+
+			// 数据库配置
+			DataBase:   DataBase{
+				Connection: "mysql",
+				Host:       os.Getenv("mysql_host"),
+				Port:       os.Getenv("mysql_port"),
+				DataBase:   os.Getenv("mysql_database"),
+				UserName:   os.Getenv("mysql_user"),
+				Password:   os.Getenv("mysql_password"),
+				Prefix:     os.Getenv("mysql_table_prefix"),
+			},
+
+			// redis 配置
+			Redis:      Redis{
+				Host:     os.Getenv("redis_host"),
+				Port:     os.Getenv("redis_port"),
+				Password: os.Getenv("redis_password"),
+			},
+
+			// memcache 配置
+			MemCache:   MemCache{
+				Host: os.Getenv("memcache_host"),
+				Port: os.Getenv("memcache_port"),
+			},
+
+			// 缓存配置
+			Cache:      Cache{Driver: os.Getenv("cache_driver")},
+
+			// 阿里云oss配置
+			AliOss:     AliOss{
+				AccessId:         os.Getenv("oss_access_id"),
+				AccessKey:        os.Getenv("oss_access_key"),
+				EndPoint:         os.Getenv("oss_end_point"),
+				EndPointInternal: os.Getenv("oss_end_point_internal"),
+				BucketName:       os.Getenv("oss_bucket_name"),
+			},
+
+			// 文件上传配置
+			FileLocal:  FileLocal{RootPath: os.Getenv("root_path")},
+
+			// 文件系统配置
+			Filesystem: Filesystem{Storage: os.Getenv("default_storage")},
+
+			// 短信配置
+			Sms:        Sms{
+				SmsSender:       os.Getenv("sms_sender"),
+				SignName:        os.Getenv("sms_sign_name"),
+				AccessId:        os.Getenv("sms_access_id"),
+				AccessKey:       os.Getenv("sms_access_key"),
+				AliTopAppKey:    "",
+				AliTopSecretKey: "",
+			},
+		},
+	}
 
 	// redis 配置
-	config.App.Redis.Host = os.Getenv("redis_host")
-	config.App.Redis.Port = os.Getenv("redis_port")
-	config.App.Redis.Password = os.Getenv("redis_password")
 	redisDatabaseString := os.Getenv("redis_database")
 	redisDatabase, err := strconv.Atoi(redisDatabaseString)
 	if err != nil {
@@ -117,32 +162,7 @@ func initAppConfig() {
 	}
 	config.App.Redis.DataBase = redisDatabase
 
-	// memcache 配置
-	config.App.MemCache.Host = os.Getenv("memcache_host")
-	config.App.MemCache.Port = os.Getenv("memcache_port")
-
-	// 缓存配置
-	config.App.Cache.Driver = os.Getenv("cache_driver")
-
-	// 阿里云oss配置
-	config.App.AliOss.AccessId = os.Getenv("oss_access_id")
-	config.App.AliOss.AccessKey = os.Getenv("oss_access_key")
-	config.App.AliOss.EndPoint = os.Getenv("oss_end_point")
-	config.App.AliOss.EndPointInternal = os.Getenv("oss_end_point_internal")
-	config.App.AliOss.BucketName = os.Getenv("oss_bucket_name")
-
-	// 文件上传配置
-	config.App.FileLocal.RootPath = os.Getenv("root_path")
-
-	// 文件系统配置
-	config.App.Filesystem.Storage =  os.Getenv("default_storage")
-
 	// 短信配置
-	config.App.Sms.SmsSender = os.Getenv("sms_sender")
-	config.App.Sms.SignName = os.Getenv("sms_sign_name")
-	config.App.Sms.AccessId = os.Getenv("sms_access_id")
-	config.App.Sms.AccessKey = os.Getenv("sms_access_key")
-
 	if config.App.Sms.AccessId == "" {
 		config.App.Sms.AccessId = config.App.AliOss.AccessId
 		config.App.Sms.AccessKey = config.App.AliOss.AccessKey
@@ -155,6 +175,16 @@ func initAppConfig() {
 func initSmsConfig()  {
 	defer func() {
 		if err := recover(); err != nil {
+			sms = &SmsConfig{
+				SmsTemplate: struct {
+					Register struct {
+						TemplateId string `yaml:"template_id"`
+						Name       string `yaml:"name"`
+						Params     uint8  `yaml:"params"`
+					} `yaml:"register"`
+				}{},
+				ValidCodeExpire: 0,
+			}
 			log.Println(err)
 		}
 	}()
