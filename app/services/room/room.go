@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"live-service/app/models"
 	file2 "live-service/app/support/file"
-	"live-service/app/support/message"
+	"live-service/app/support/sms"
 	"live-service/app/util"
 	cache2 "live-service/app/util/cache"
 	"live-service/app/util/database"
@@ -206,7 +206,7 @@ func Cache(ctx *gin.Context) {
 
 func Sms(ctx *gin.Context) {
 	telephone := ctx.DefaultQuery("telephone", "")
-	err := message.SendSmsCode(telephone, "register")
+	err := sms.SendSmsCode(telephone, "register")
 	if err != nil {
 		log.Println(err)
 	}
@@ -215,7 +215,7 @@ func Sms(ctx *gin.Context) {
 func ValidSmsCode(ctx *gin.Context) {
 	code := ctx.DefaultQuery("sms_code", "")
 	telephone := ctx.DefaultQuery("telephone", "")
-	err := message.ValidSmsCode(telephone, "register", code)
+	err := sms.ValidSmsCode(telephone, "register", code)
 	if err != nil {
 		log.Println(err)
 	}

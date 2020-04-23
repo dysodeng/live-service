@@ -1,18 +1,18 @@
-package message
+package sms
 
 import (
 	"errors"
 	"fmt"
 	baseRedis "github.com/gomodule/redigo/redis"
 	"live-service/app/config"
-	"live-service/app/support/message/sender"
+	"live-service/app/support/sms/sender"
 	"live-service/app/util"
 	"live-service/app/util/database"
 	"log"
 	"time"
 )
 
-type SmsCode struct {
+type Code struct {
 	Code string		`redis:"code"`
 	Time int64		`redis:"time"`
 	Expire int64	`redis:"expire"`
@@ -46,7 +46,7 @@ func SendSmsCode(phoneNumber string, template string) error {
 
 	_, _ = redis.Do("DEL", key)
 
-	smsCode := SmsCode{
+	smsCode := Code{
 		Code: templateParam["code"],
 		Time: time.Now().Unix(),
 		Expire: smsConf.ValidCodeExpire,
@@ -96,7 +96,7 @@ func ValidSmsCode(phoneNumber string, template string, smsCode string) error {
 		return errors.New("验证码已过期，请重新获取")
 	}
 
-	code := &SmsCode{}
+	code := &Code{}
 	err = baseRedis.ScanStruct(value, code)
 	if err != nil {
 		log.Println(err)
