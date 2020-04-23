@@ -10,6 +10,7 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
+	"live-service/app/support/file/storage"
 	"live-service/app/util"
 	"log"
 	"mime/multipart"
@@ -19,10 +20,10 @@ import (
 )
 
 type Uploader struct {
-	storage Storage
+	storage storage.Storage
 }
 
-func NewUploader(storage Storage) *Uploader {
+func NewUploader(storage storage.Storage) *Uploader {
 
 	uploader := new(Uploader)
 	uploader.storage = storage
@@ -97,9 +98,12 @@ func (uploader *Uploader) Upload(userType string, userId int64, fileHeader *mult
 	}
 
 	// 创建目录
-	_, err = uploader.storage.MkDir(rootPath + savePath, 0755)
-	if err != nil {
-		return Info{}, err
+	if !uploader.storage.HasDir(rootPath + savePath) {
+		_, err = uploader.storage.MkDir(rootPath + savePath, 0755)
+		if err != nil {
+			log.Println(err)
+			return Info{}, err
+		}
 	}
 
 	// 计算文件大小

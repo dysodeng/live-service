@@ -2,15 +2,16 @@ package file
 
 import (
 	"live-service/app/config"
+	"live-service/app/support/file/storage"
 	"log"
 	"mime/multipart"
 	"os"
 )
 
 type Filesystem struct {
-	storage Storage
+	storage  storage.Storage
 	userType string
-	userId	int64
+	userId   int64
 }
 
 type Size interface {
@@ -55,10 +56,10 @@ func NewFilesystem(userType string, userId int64) *Filesystem {
 
 	switch conf.App.Filesystem.Storage {
 	case "alioss":
-		file.storage = NewAliOssStorage()
+		file.storage = storage.NewAliOssStorage()
 		break
 	case "local":
-		file.storage = NewLocalStorage()
+		file.storage = storage.NewLocalStorage()
 		break
 	default:
 		panic("file storage error:"+conf.App.Filesystem.Storage)
