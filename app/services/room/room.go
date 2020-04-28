@@ -156,7 +156,7 @@ func TestFile(ctx *gin.Context) {
 	}
 
 	file := file2.NewFilesystem("user", 1)
-	result,err := file.Uploader(uploadFile)
+	result,err := file.Upload(uploadFile)
 	if err != nil {
 		log.Println(err.Error())
 		ctx.JSON(http.StatusOK, err.Error())

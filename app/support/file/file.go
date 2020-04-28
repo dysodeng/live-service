@@ -89,7 +89,7 @@ func (filesystem *Filesystem) SignObject(filePath string) string {
 }
 
 // 文件上传
-func (filesystem *Filesystem) Uploader(file *multipart.FileHeader) (Info, error) {
+func (filesystem *Filesystem) Upload(file *multipart.FileHeader) (Info, error) {
 	uploader := NewUploader(filesystem.storage)
 	return uploader.Upload(filesystem.userType, filesystem.userId, file)
 }
