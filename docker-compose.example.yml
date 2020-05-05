@@ -9,7 +9,7 @@ services:
       dockerfile: Dockerfile
     env_file: .env
     volumes:
-      - ../:/go/src/live-service
+      - ./uploads:/app/uploads
     environment:
       - domain=${DOMAIN}
       - mysql_host=${MYSQL_HOST}

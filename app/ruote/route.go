@@ -5,6 +5,7 @@ import (
 	"live-service/app/middleware"
 	"live-service/app/services/auth"
 	"live-service/app/services/room"
+	"live-service/app/services/util"
 )
 
 // 获取路由
@@ -22,6 +23,7 @@ func GetRouter() *gin.Engine {
 			apiAuth.POST("/refresh_token", auth.RefreshToken)
 			apiAuth.POST("/register", auth.Register)
 		}
+
 		api.POST("/test", room.TestFile)
 		api.GET("/file", room.File)
 		api.GET("/cache", room.Cache)
@@ -31,6 +33,11 @@ func GetRouter() *gin.Engine {
 		authorization := api.Group("/")
 		authorization.Use(middleware.TokenAuth)
 		{
+			utils := authorization.Group("/util")
+			{
+				utils.POST("/upload", util.Upload)
+			}
+
 			rooms := authorization.Group("/room")
 			{
 				rooms.POST("/lists", room.GetRoomList)

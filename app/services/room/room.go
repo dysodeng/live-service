@@ -2,8 +2,9 @@ package room
 
 import (
 	"github.com/gin-gonic/gin"
+	"live-service/app/config"
 	"live-service/app/models"
-	file2 "live-service/app/support/file"
+	file2 "live-service/app/support/filesystem"
 	"live-service/app/support/sms"
 	"live-service/app/util"
 	cache2 "live-service/app/util/cache"
@@ -155,8 +156,14 @@ func TestFile(ctx *gin.Context) {
 		return
 	}
 
+	allow, ok := config.UserFile["cover_image"]
+	if !ok {
+		ctx.JSON(http.StatusOK, util.ToastFail("上传类型不正确", 1))
+		return
+	}
+
 	file := file2.NewFilesystem("user", 1)
-	result,err := file.Upload(uploadFile)
+	result,err := file.Upload(uploadFile, allow, "cover_image")
 	if err != nil {
 		log.Println(err.Error())
 		ctx.JSON(http.StatusOK, err.Error())

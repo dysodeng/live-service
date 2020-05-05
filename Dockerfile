@@ -1,17 +1,19 @@
 FROM golang:1.13
 
-WORKDIR /go/src/live-service
+WORKDIR /app
 
 RUN /bin/cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' >/etc/timezone
 
-ENV GOPROXY https://goproxy.io
-ENV GO111MODULE on
+WORKDIR /app
+ADD ./go.mod /app
+ADD ./go.sum /app
 
-ADD go.mod .
-ADD go.sum .
+RUN export GOPROXY=https://goproxy.cn && go mod download
 
-RUN go mod download
+ADD . /app
+
+RUN CGO_ENABLED=0 go build -o live-service
 
 EXPOSE 8080
 
-CMD nohup sh -c "go build && ./live-service"
+CMD /app/live-service

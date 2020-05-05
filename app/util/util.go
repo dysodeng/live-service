@@ -42,10 +42,11 @@ func GeneratePassword(password []byte) string {
 }
 
 // 验证密码
-func ComparePassword(hashedPassword string, plainPassword []byte) bool {
-	byteHash := []byte(hashedPassword)
+func ComparePassword(hashedPassword string, plainPassword string) bool {
+	byteHashByte := []byte(hashedPassword)
+	plainPasswordByte := []byte(plainPassword)
 
-	err := bcrypt.CompareHashAndPassword(byteHash, plainPassword)
+	err := bcrypt.CompareHashAndPassword(byteHashByte, plainPasswordByte)
 	if err != nil {
 		log.Println(err)
 		return false
@@ -74,9 +75,9 @@ func GenValidateCode(length int) string {
 	r := len(numeric)
 	rand.Seed(time.Now().UnixNano())
 
-	var sb strings.Builder
+	var strBuilder strings.Builder
 	for i := 0; i < length; i++ {
-		_, _ = fmt.Fprintf(&sb, "%d", numeric[rand.Intn(r)])
+		_, _ = fmt.Fprintf(&strBuilder, "%d", numeric[rand.Intn(r)])
 	}
-	return sb.String()
+	return strBuilder.String()
 }

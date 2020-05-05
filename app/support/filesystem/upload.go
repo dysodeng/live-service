@@ -1,4 +1,4 @@
-package file
+package filesystem
 
 import (
 	"crypto/md5"
@@ -10,7 +10,8 @@ import (
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
-	"live-service/app/support/file/storage"
+	"live-service/app/config"
+	"live-service/app/support/filesystem/storage"
 	"live-service/app/util"
 	"log"
 	"mime/multipart"
@@ -21,12 +22,16 @@ import (
 
 type Uploader struct {
 	storage storage.Storage
+	allow config.FileAllow
+	field string
 }
 
-func NewUploader(storage storage.Storage) *Uploader {
+func NewUploader(storage storage.Storage, allow config.FileAllow, field string) *Uploader {
 
 	uploader := new(Uploader)
 	uploader.storage = storage
+	uploader.allow = allow
+	uploader.field = field
 
 	return uploader
 }
@@ -46,8 +51,15 @@ func (uploader *Uploader) Upload(userType string, userId int64, fileHeader *mult
 	case "user":
 		rootPath = "user/"+stringUserId+"/"
 		break
+	case "platform":
+		rootPath = "platform/"
+		break
 	default:
-		return Info{}, errors.New("用户类型错误")
+		rootPath = "platform/"
+	}
+
+	if userType == "platform" && uploader.field == "editor" {
+		rootPath = rootPath + "editor/"
 	}
 
 	file, err := fileHeader.Open()
@@ -62,9 +74,25 @@ func (uploader *Uploader) Upload(userType string, userId int64, fileHeader *mult
 	var ext string
 	filename := fileHeader.Filename
 
+	fType, ok := MimeType[mime]
+
+	if !ok || !IsExistsMimeAllow(fType, uploader.allow.AllowMimeType) {
+		return Info{}, errors.New("不允许上传"+fType+"类型文件")
+	}
+
 	extSlice := strings.Split(filename, ".")
 	if len(extSlice) >= 2 {
 		ext = extSlice[len(extSlice) - 1]
+	}
+
+	// 计算文件大小
+	var size int64
+	if fileSize, ok := file.(Size); ok {
+		size = fileSize.Size()
+	}
+
+	if size > uploader.allow.AllowCapacitySize {
+		return Info{}, errors.New("上传文件大小不符")
 	}
 
 	// 如果是图片，获取图片尺寸
@@ -97,6 +125,16 @@ func (uploader *Uploader) Upload(userType string, userId int64, fileHeader *mult
 		dstFile += "." + ext
 	}
 
+	// 检查是否存在该文件
+	fileInfo, err := FileExists(userType, userId, sha1String, md5String)
+	if err == nil {
+		if uploader.HasFile(fileInfo.FullPath) {
+			return fileInfo, nil
+		} else {
+			DeleteFile(userType, fileInfo.Id)
+		}
+	}
+
 	// 创建目录
 	if !uploader.storage.HasDir(rootPath + savePath) {
 		_, err = uploader.storage.MkDir(rootPath + savePath, 0755)
@@ -104,12 +142,6 @@ func (uploader *Uploader) Upload(userType string, userId int64, fileHeader *mult
 			log.Println(err)
 			return Info{}, err
 		}
-	}
-
-	// 计算文件大小
-	var size int64
-	if fileSize, ok := file.(Size); ok {
-		size = fileSize.Size()
 	}
 
 	// 上传文件
@@ -125,6 +157,8 @@ func (uploader *Uploader) Upload(userType string, userId int64, fileHeader *mult
 		Sha1: sha1String,
 		Name: filename,
 		Ext: ext,
+		SavePath: savePath,
+		SaveName: filePath,
 		RootPath: rootPath,
 		Mime: mime,
 		IsImage: isImage,
@@ -133,9 +167,15 @@ func (uploader *Uploader) Upload(userType string, userId int64, fileHeader *mult
 		Size: size,
 	}
 
+	// 保存文件
+	id, err := SaveFile(userType, userId, info)
+	if err == nil {
+		info.Id = id
+	}
+
 	return info, nil
 }
 
 func (uploader *Uploader) HasFile(filePath string) bool {
-	return false
+	return uploader.storage.HasFile(filePath)
 }

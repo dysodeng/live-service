@@ -60,7 +60,7 @@ func Login(ctx *gin.Context) {
 			ctx.JSON(http.StatusOK, util.ToastFail("用户名错误", 1))
 			return
 		}
-		if util.ComparePassword(user.SafePassword, []byte(auth.Password)) == false {
+		if util.ComparePassword(user.SafePassword, auth.Password) == false {
 			ctx.JSON(http.StatusOK, util.ToastFail("密码错误", 1))
 			return
 		}
