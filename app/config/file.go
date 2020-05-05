@@ -1,7 +1,9 @@
 package config
 
 type FileAllow struct {
+	// 允许上传的文件类型
 	AllowMimeType		[]string
+	// 允许上传的文件容量大小(单位：字节)
 	AllowCapacitySize	int64
 }
 
