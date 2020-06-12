@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"live-service/app/config"
+	"live-service/app/support/redis"
 	"live-service/app/support/sms/sender"
 	"live-service/app/util"
-	"live-service/app/util/redis"
 	"log"
 	"time"
 )
