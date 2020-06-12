@@ -1,7 +1,7 @@
 sms_template:
   register:
-    template_id: 'SMS_54640020'
+    template_id: 'SMS_188480129'
     name: '注册验证'
-    params: 2
+    params: 1
 
 valid_code_expire: 10

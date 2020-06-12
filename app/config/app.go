@@ -20,8 +20,6 @@ type App struct {
 	Domain string
 	DataBase DataBase
 	Redis Redis
-	MemCache MemCache
-	Cache Cache
 	AliOss AliOss
 	FileLocal FileLocal
 	Filesystem Filesystem
@@ -45,17 +43,6 @@ type Redis struct {
 	Port string
 	Password string
 	DataBase int
-}
-
-// MemCached
-type MemCache struct {
-	Host string
-	Port string
-}
-
-// 缓存配置
-type Cache struct {
-	Driver string
 }
 
 // 文件处理配置
@@ -119,15 +106,6 @@ func initAppConfig() {
 				Port:     os.Getenv("redis_port"),
 				Password: os.Getenv("redis_password"),
 			},
-
-			// memcache 配置
-			MemCache:   MemCache{
-				Host: os.Getenv("memcache_host"),
-				Port: os.Getenv("memcache_port"),
-			},
-
-			// 缓存配置
-			Cache:      Cache{Driver: os.Getenv("cache_driver")},
 
 			// 阿里云oss配置
 			AliOss:     AliOss{

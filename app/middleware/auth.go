@@ -64,7 +64,7 @@ func TokenAuth(ctx *gin.Context) {
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if claims["aud"] != conf.App.Domain || claims["iss"] != conf.App.Domain + "/api/auth" {
 			ctx.Abort()
-			ctx.JSON(http.StatusOK, util.ToastFail("illegal token", 1))
+			ctx.JSON(http.StatusOK, util.ToastFail("illegal token", 401))
 			return
 		}
 		if claims["is_refresh_token"] == true {
@@ -76,7 +76,11 @@ func TokenAuth(ctx *gin.Context) {
 		switch claims["user_type"].(string) {
 		case "user":
 			ctx.Set("user_type", claims["user_type"].(string))
-			ctx.Set("user_id", int64(claims["user_id"].(float64)))
+			ctx.Set("user_id", int64(claims["id"].(float64)))
+			break
+		case "admin":
+			ctx.Set("user_type", claims["user_type"].(string))
+			ctx.Set("admin_id", int64(claims["id"].(float64)))
 			break
 		default:
 			ctx.Abort()

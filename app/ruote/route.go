@@ -26,7 +26,6 @@ func GetRouter() *gin.Engine {
 
 		api.POST("/test", room.TestFile)
 		api.GET("/file", room.File)
-		api.GET("/cache", room.Cache)
 		api.GET("/sms", room.Sms)
 		api.GET("/sms/valid", room.ValidSmsCode)
 

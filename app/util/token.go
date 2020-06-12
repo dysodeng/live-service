@@ -48,7 +48,7 @@ func GenerateToken(userType string, data map[string]interface{}) (TokenData, err
 		refreshTokenExpire = 2 * 24 * 3600
 		// Token
 		tokenMethod = jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-			"user_id":          data["user_id"],
+			"id":          		data["user_id"],
 			"user_type":        userType,
 			"is_refresh_token": false,
 			"iss":              conf.App.Domain + "/api/auth",
@@ -58,7 +58,7 @@ func GenerateToken(userType string, data map[string]interface{}) (TokenData, err
 		})
 
 		refreshTokenMethod = jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
-			"user_id":          data["user_id"],
+			"id":          		data["user_id"],
 			"user_type":        userType,
 			"is_refresh_token": true,
 			"iss":              conf.App.Domain + "/api/auth",
@@ -67,7 +67,29 @@ func GenerateToken(userType string, data map[string]interface{}) (TokenData, err
 			"exp":              currentTime + int64(expire),
 		})
 		break
+	case "admin":
+		expire = 4 * 3600
+		refreshTokenExpire = 24 * 3600
+		// Token
+		tokenMethod = jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
+			"id":          		data["admin_id"],
+			"user_type":        userType,
+			"is_refresh_token": false,
+			"iss":              conf.App.Domain + "/api/auth",
+			"aud":              conf.App.Domain,
+			"iat":              currentTime,
+			"exp":              currentTime + int64(expire),
+		})
 
+		refreshTokenMethod = jwt.NewWithClaims(jwt.SigningMethodRS256, jwt.MapClaims{
+			"id":          		data["admin_id"],
+			"user_type":        userType,
+			"is_refresh_token": true,
+			"iss":              conf.App.Domain + "/api/auth",
+			"aud":              conf.App.Domain,
+			"iat":              currentTime,
+			"exp":              currentTime + int64(expire),
+		})
 	}
 
 	if tokenMethod == nil {

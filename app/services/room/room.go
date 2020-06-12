@@ -4,15 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"live-service/app/config"
 	"live-service/app/models"
-	file2 "live-service/app/support/filesystem"
+	"live-service/app/support/filesystem"
 	"live-service/app/support/sms"
 	"live-service/app/util"
-	cache2 "live-service/app/util/cache"
 	"live-service/app/util/database"
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 )
 
 type Test struct {
@@ -162,7 +160,7 @@ func TestFile(ctx *gin.Context) {
 		return
 	}
 
-	file := file2.NewFilesystem("user", 1)
+	file := filesystem.NewFilesystem("user", 1)
 	result,err := file.Upload(uploadFile, allow, "cover_image")
 	if err != nil {
 		log.Println(err.Error())
@@ -186,7 +184,7 @@ func TestFile(ctx *gin.Context) {
 }
 
 func File(ctx *gin.Context) {
-	file := file2.NewFilesystem("user", 1)
+	file := filesystem.NewFilesystem("user", 1)
 	if file.HasFile("user/1/2019-06-24/user12019062403432497212422499.png") {
 		log.Println("文件存在")
 	} else {
@@ -195,20 +193,6 @@ func File(ctx *gin.Context) {
 	url := file.SignObject("user/1/2019-06-24/user12019062403432497212422499.png")
 	log.Println(url)
 	//file.DeleteFile("user/1/2019-06-24/user12019062403432497212422499.png")
-}
-
-func Cache(ctx *gin.Context) {
-	cache := *cache2.GetCache()
-	_ = cache.Put("abc", 1, 100*time.Second)
-
-	result := cache.Get("abc")
-
-	log.Println(string(result.([]byte)))
-
-	_ = cache.Incr("abc")
-	result = cache.Get("abc")
-
-	log.Println(string(result.([]byte)))
 }
 
 func Sms(ctx *gin.Context) {

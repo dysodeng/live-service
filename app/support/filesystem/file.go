@@ -54,7 +54,7 @@ func NewFilesystem(userType string, userId int64) *Filesystem {
 	file := new(Filesystem)
 	conf := config.GetAppConfig()
 
-	if userType != "user" {
+	if userType != "user" && userType != "platform" {
 		panic("user type error")
 	}
 	file.userType = userType

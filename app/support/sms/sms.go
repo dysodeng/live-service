@@ -1,21 +1,20 @@
 package sms
 
 import (
+	"encoding/json"
 	"errors"
-	"fmt"
-	baseRedis "github.com/gomodule/redigo/redis"
 	"live-service/app/config"
 	"live-service/app/support/sms/sender"
 	"live-service/app/util"
-	"live-service/app/util/database"
+	"live-service/app/util/redis"
 	"log"
 	"time"
 )
 
 type Code struct {
-	Code string		`redis:"code"`
-	Time int64		`redis:"time"`
-	Expire int64	`redis:"expire"`
+	Code string		`redis:"code";json:"code"`
+	Time int64		`redis:"time";json:"time"`
+	Expire int64	`redis:"expire";json:"expire"`
 }
 
 // 发送验证码
@@ -29,7 +28,7 @@ func SendSmsCode(phoneNumber string, template string) error {
 	case "register":
 		templateCode = smsConf.SmsTemplate.Register.TemplateId
 		if smsConf.SmsTemplate.Register.Params > 1 {
-			templateParam["time"] = fmt.Sprintf("%d", smsConf.ValidCodeExpire)+"分钟"
+			templateParam["time"] = string(smsConf.ValidCodeExpire)
 		}
 		break
 	default:
@@ -39,27 +38,27 @@ func SendSmsCode(phoneNumber string, template string) error {
 	templateParam["code"] = util.GenValidateCode(6) // 验证码
 
 	// 验证码缓存
-	redis := database.GetRedis()
-	defer redis.Close()
+	redisClient := redis.Client()
 
 	key := "sms_code_"+template+":"+phoneNumber
 
-	_, _ = redis.Do("DEL", key)
+	redisClient.Del(key)
 
 	smsCode := Code{
 		Code: templateParam["code"],
 		Time: time.Now().Unix(),
-		Expire: smsConf.ValidCodeExpire,
+		Expire: 10,
 	}
 	log.Println(smsCode)
 	log.Println(smsCode.Time + smsCode.Expire * 60)
 
-	result, err := redis.Do("HMSET", baseRedis.Args{}.Add(key).AddFlat(smsCode)...)
+	code, err := json.Marshal(smsCode)
+	redisClient.Set(key, code, time.Second * 60 * 60)
+
 	if err != nil {
-		return err
+		log.Println("sms storage err: ", err)
+		return errors.New("短信发送失败")
 	}
-	_, _ = redis.Do("EXPIRE", key, smsConf.ValidCodeExpire*60)
-	log.Println(result)
 
 	var smsSender sender.SmsSender
 
@@ -84,20 +83,21 @@ func SendSmsCode(phoneNumber string, template string) error {
 
 // 验证短信验证码
 func ValidSmsCode(phoneNumber string, template string, smsCode string) error {
-	// 验证码缓存
-	redis := database.GetRedis()
-	defer redis.Close()
 
+	redisClient := redis.Client()
+
+	// 验证码缓存
 	key := "sms_code_"+template+":"+phoneNumber
 
-	value, err := baseRedis.Values(redis.Do("HGETALL", key))
+	value, err := redisClient.Get(key).Result()
+
 	if err != nil {
 		log.Println(err)
 		return errors.New("验证码已过期，请重新获取")
 	}
 
 	code := &Code{}
-	err = baseRedis.ScanStruct(value, code)
+	err = json.Unmarshal([]byte(value), code)
 	if err != nil {
 		log.Println(err)
 		return errors.New("验证码已过期，请重新获取")
@@ -108,7 +108,7 @@ func ValidSmsCode(phoneNumber string, template string, smsCode string) error {
 			return errors.New("验证码错误")
 		}
 
-		_, _ = redis.Do("DEL", key)
+		redisClient.Del(key)
 	} else {
 		return errors.New("验证码已过期，请重新获取")
 	}

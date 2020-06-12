@@ -39,8 +39,10 @@ func NewUploader(storage storage.Storage, allow config.FileAllow, field string) 
 // 文件上传
 func (uploader *Uploader) Upload(userType string, userId int64, fileHeader *multipart.FileHeader) (Info, error) {
 
-	if userId <= 0 {
-		return Info{}, errors.New("用户ID为空")
+	if userType != "platform" {
+		if userId <= 0 {
+			return Info{}, errors.New("用户ID为空")
+		}
 	}
 
 	rootPath := ""

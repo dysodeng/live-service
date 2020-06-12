@@ -1,0 +1,11 @@
+/.idea
+/.git
+/yxoa-transform
+/yxoa-transform~
+/go_build_main_go
+/lastupdate.tmp
+/zoneinfo.zip
+.env
+README.md
+docker-compose.yml
+.dockerignore

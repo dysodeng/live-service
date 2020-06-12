@@ -1,15 +1,18 @@
 module live-service
 
-go 1.12
+go 1.13
 
 require (
-	github.com/aliyun/alibaba-cloud-sdk-go v0.0.0-20190916104532-daf2d24ce8d4
-	github.com/aliyun/aliyun-oss-go-sdk v2.0.2+incompatible
-	github.com/astaxie/beego v1.12.0
+	github.com/aliyun/alibaba-cloud-sdk-go v1.61.254
+	github.com/aliyun/aliyun-oss-go-sdk v2.1.1+incompatible
+	github.com/baiyubin/aliyun-sts-go-sdk v0.0.0-20180326062324-cfa1a18b161f // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/gin-gonic/gin v1.4.0
-	github.com/gomodule/redigo v2.0.0+incompatible
-	github.com/jinzhu/gorm v1.9.10
-	golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c
-	gopkg.in/yaml.v2 v2.2.2
+	github.com/gin-gonic/gin v1.6.3
+	github.com/go-redis/redis/v7 v7.4.0
+	github.com/gomodule/redigo/redis v0.0.0-20200429221454-e14091dffc1b
+	github.com/jinzhu/gorm v1.9.12
+	github.com/satori/go.uuid v1.2.0 // indirect
+	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9
+	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1 // indirect
+	gopkg.in/yaml.v2 v2.3.0
 )
