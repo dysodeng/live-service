@@ -9,7 +9,7 @@ import (
 )
 
 // 获取路由
-func GetRouter() *gin.Engine {
+func Router() *gin.Engine {
 	router := gin.Default()
 
 	// 跨域处理

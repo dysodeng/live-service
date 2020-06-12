@@ -8,10 +8,7 @@ import (
 	"live-service/app/models"
 	"live-service/app/util"
 	"live-service/app/util/database"
-	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -87,20 +84,16 @@ func Login(ctx *gin.Context) {
 
 // Token刷新
 func RefreshToken(ctx *gin.Context) {
+
+	conf := config.GetAppConfig()
+
 	refreshToken := ctx.PostForm("refresh_token")
 	if refreshToken == "" {
 		ctx.JSON(http.StatusOK, util.ToastFail("TOKEN刷新令牌未指定", 1))
 		return
 	}
 
-	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Println(err.Error())
-		ctx.JSON(http.StatusOK, util.ToastFail("error", 401))
-		return
-	}
-
-	tokenSecretBytes, err := ioutil.ReadFile(rootDir + util.PublicKey)
+	tokenSecretBytes, err := ioutil.ReadFile(conf.App.AppPath + util.PublicKey)
 	if err != nil {
 		ctx.JSON(http.StatusOK, util.ToastFail("illegal token", 401))
 		return
@@ -119,8 +112,6 @@ func RefreshToken(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, util.ToastFail("illegal token", 401))
 		return
 	}
-
-	conf := config.GetAppConfig()
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if claims["aud"] != conf.App.Domain || claims["iss"] != conf.App.Domain + "/api/auth" {

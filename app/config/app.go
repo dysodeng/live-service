@@ -1,6 +1,7 @@
 package config
 
 import (
+	"flag"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"log"
@@ -17,6 +18,7 @@ type AppConfig struct {
 // 主配置
 type App struct {
 	AppName string
+	AppPath string
 	Domain string
 	DataBase DataBase
 	Redis Redis
@@ -82,11 +84,19 @@ var sms *SmsConfig
 // 初始化应用配置
 func initAppConfig() {
 
+	var appPath string
+	flag.StringVar(&appPath, "app-path", "", "")
+	flag.Parse()
+	if appPath == "" {
+		appPath, _ = filepath.Abs(filepath.Dir(os.Args[0]))
+	}
+
 	config = &AppConfig{
 		App: App{
 
 			// 项目配置
 			AppName:    "live-service",
+			AppPath:	appPath,
 			Domain:     os.Getenv("domain"),
 
 			// 数据库配置
@@ -169,17 +179,13 @@ func initSmsConfig()  {
 		}
 	}()
 
-	// 固定配置
-	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-
+	// 读取短信配置
 	var configFileData []byte
+	var err error
 
-	configFileData, err = ioutil.ReadFile(rootDir+"/config/sms.yml")
+	configFileData, err = ioutil.ReadFile(config.App.AppPath+"/config/sms.yml")
 	if err != nil {
-		configFileData, err = ioutil.ReadFile(rootDir+"/config/sms.yaml")
-		if err != nil {
-			panic("read config file err "+err.Error())
-		}
+		panic("read config file err "+err.Error())
 	}
 
 	err = yaml.Unmarshal(configFileData, &sms)

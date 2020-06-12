@@ -6,10 +6,7 @@ import (
 	"io/ioutil"
 	"live-service/app/config"
 	"live-service/app/util"
-	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 )
 
 type AuthUser struct {
@@ -22,21 +19,15 @@ func TokenAuth(ctx *gin.Context) {
 
 	tokenString := ctx.GetHeader("Authorization")
 
+	conf := config.GetAppConfig()
+
 	if tokenString == "" {
 		ctx.Abort()
 		ctx.JSON(http.StatusOK, util.ToastFail("empty token", 401))
 		return
 	}
 
-	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		log.Println(err.Error())
-		ctx.Abort()
-		ctx.JSON(http.StatusOK, util.ToastFail("error", 401))
-		return
-	}
-
-	tokenSecretBytes, err := ioutil.ReadFile(rootDir + util.PublicKey)
+	tokenSecretBytes, err := ioutil.ReadFile(conf.App.AppPath + util.PublicKey)
 	if err != nil {
 		ctx.Abort()
 		ctx.JSON(http.StatusOK, util.ToastFail("illegal token", 401))
@@ -58,8 +49,6 @@ func TokenAuth(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, util.ToastFail("illegal token", 401))
 		return
 	}
-
-	conf := config.GetAppConfig()
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if claims["aud"] != conf.App.Domain || claims["iss"] != conf.App.Domain + "/api/auth" {

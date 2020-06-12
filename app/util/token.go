@@ -7,8 +7,6 @@ import (
 	"io/ioutil"
 	"live-service/app/config"
 	"log"
-	"os"
-	"path/filepath"
 	"time"
 )
 
@@ -99,13 +97,8 @@ func GenerateToken(userType string, data map[string]interface{}) (TokenData, err
 		panic("refresh error")
 	}
 
-	rootDir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-	if err != nil {
-		panic(err.Error())
-	}
-
 	// token
-	tokenSecretBytes, err := ioutil.ReadFile(rootDir + PrivateKey)
+	tokenSecretBytes, err := ioutil.ReadFile(conf.App.AppPath + PrivateKey)
 	if err != nil {
 		return TokenData{}, errors.New("TOKEN生成错误")
 	}
@@ -119,7 +112,7 @@ func GenerateToken(userType string, data map[string]interface{}) (TokenData, err
 	}
 
 	// refreshToken
-	refreshTokenSecretBytes, err := ioutil.ReadFile(rootDir + PrivateKey)
+	refreshTokenSecretBytes, err := ioutil.ReadFile(conf.App.AppPath + PrivateKey)
 	if err != nil {
 		return TokenData{}, errors.New("TOKEN生成错误")
 	}

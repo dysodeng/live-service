@@ -11,13 +11,12 @@ import (
 	"time"
 )
 
-
 func main() {
 
 	gin.SetMode(gin.ReleaseMode)
 
 	// load router
-	router := ruote.GetRouter()
+	router := ruote.Router()
 
 	server := http.Server{
 		Addr: ":8080",
