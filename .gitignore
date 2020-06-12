@@ -7,4 +7,5 @@
 /lastupdate.tmp
 nginx.conf
 .env
+env.sh
 docker-compose.yml
