@@ -62,7 +62,7 @@ func NewFilesystem(userType string, userId int64) *Filesystem {
 	file.userId = userId
 
 	switch conf.App.Filesystem.Storage {
-	case "alioss":
+	case "ali_oss":
 		file.storage = storage.NewAliOssStorage()
 		break
 	case "local":

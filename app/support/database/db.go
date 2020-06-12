@@ -36,6 +36,7 @@ func init() {
 	// 禁止表名复数
 	db.SingularTable(true)
 
+	// 连接池设置
 	db.DB().SetMaxOpenConns(100) // 连接池最大连接数
 	db.DB().SetMaxIdleConns(20) // 连接池最大允许的空闲连接数，如果没有sql任务需要执行的连接数大于20，超过的连接会被连接池关闭。
 
