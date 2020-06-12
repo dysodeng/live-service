@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"live-service/app/config"
 	"live-service/app/models"
+	"live-service/app/support/database"
 	"live-service/app/util"
-	"live-service/app/util/database"
 	"net/http"
 	"time"
 )
@@ -203,10 +203,10 @@ func Register(ctx *gin.Context) {
 		}
 
 		newUser := models.User{
-			UserType: 0,
-			Telephone: data.Username,
+			UserType:     0,
+			Telephone:    data.Username,
 			SafePassword: util.GeneratePassword([]byte(data.Password)),
-			Status: 1,
+			Status:       1,
 			RegisterTime: database.JSONTime{Time: time.Now()},
 		}
 

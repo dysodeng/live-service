@@ -4,11 +4,12 @@ import (
 	"errors"
 	"live-service/app/config"
 	"live-service/app/models"
+	"live-service/app/support/database"
 	"live-service/app/support/filesystem/storage"
-	"live-service/app/util/database"
 	"log"
 	"mime/multipart"
 	"os"
+	"time"
 )
 
 type Filesystem struct {
@@ -208,6 +209,7 @@ func SaveFile(userType string, userId int64, info Info) (id int64, err error) {
 			IsImage:  info.IsImage,
 			Width:    info.Width,
 			Height:   info.Height,
+			CreateTime: database.JSONTime{Time: time.Now()},
 		}
 
 		db := database.GetDb()
@@ -232,6 +234,7 @@ func SaveFile(userType string, userId int64, info Info) (id int64, err error) {
 			IsImage:  info.IsImage,
 			Width:    info.Width,
 			Height:   info.Height,
+			CreateTime: database.JSONTime{Time: time.Now()},
 		}
 
 		db := database.GetDb()
