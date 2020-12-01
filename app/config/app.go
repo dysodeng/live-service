@@ -207,5 +207,7 @@ func GetSmsConfig() *SmsConfig {
 // 初始化配置
 func init() {
 	initAppConfig()
-	initSmsConfig()
+	if os.Getenv("disable_sms") != "yes" {
+		initSmsConfig()
+	}
 }
